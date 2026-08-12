@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e8edf0"/><stop offset=".58" stop-color="#f7f1e7"/><stop offset="1" stop-color="#fffaf2"/></linearGradient>
+  <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#b8c9cc" stop-opacity=".72"/><stop offset="1" stop-color="#6f9298" stop-opacity=".42"/></linearGradient>
+  <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffaf0"/><stop offset="1" stop-color="#dfc79d"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#edc76f"/><stop offset="1" stop-color="#b4772c"/></linearGradient>
+</defs>
+<g id="background">
+  <rect width="600" height="420" rx="28" fill="url(#sky)"/>
+  <path d="M0 246c78-34 145-38 218-14 45 14 91 14 139-1 80-25 153-18 243 20v169H0Z" fill="url(#water)"/>
+</g>
+<g id="mist" fill="#fffaf2">
+  <path d="M0 166c72-32 142-35 207-12 39 14 75 14 112 2 86-29 176-23 281 19v73c-93-31-174-35-250-10-53 18-103 18-153 2-61-20-127-18-197 10Z" opacity=".64"/>
+  <path d="M0 207c75-18 142-15 201 8 50 20 101 20 153 1 68-25 151-21 246 13v45c-90-21-166-19-229 5-61 23-119 22-177-2-55-23-120-24-194-3Z" opacity=".48"/>
+</g>
+<g id="water-lines" fill="none" stroke="#668b93" stroke-width="3" stroke-linecap="round" opacity=".5">
+  <path d="M68 300c66-13 124-12 178 3 54 14 112 13 174-4 38-11 76-12 113-5"/>
+  <path d="M103 335c55-10 107-8 156 5 51 13 102 12 154-3 28-8 55-9 83-5"/>
+  <path d="M153 369c39-7 77-5 115 4 42 10 83 10 125-2"/>
+</g>
+<g id="paper-boat" stroke="#9a7040" stroke-width="3" stroke-linejoin="round">
+  <path d="M184 278 300 220l116 58-55 68H239Z" fill="url(#paper)"/>
+  <path d="m184 278 116 13 116-13-55 68H239Z" fill="#e9d6b5"/>
+  <path d="m300 220-1 71-115-13Z" fill="#fffaf1"/>
+  <path d="m300 220-1 71 117-13Z" fill="url(#gold)" opacity=".82"/>
+</g>
+<g id="star" fill="#d4a34a" stroke="#d4a34a" stroke-width="2" stroke-linecap="round">
+  <circle cx="454" cy="92" r="4"/><path d="M454 76v32M438 92h32"/>
+</g>
+</svg>

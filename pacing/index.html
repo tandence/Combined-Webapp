@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102f38">
+  <meta name="description" content="Plan meaningful activities around today's capacity.">
+  <title>Plan My Day — Pain Jigsaw</title>
+  <link rel="icon" href="../pain-jigsaw/assets/app-icons/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="../shared/journey-bridge.css">
+  <link rel="stylesheet" href="pacing.css">
+  <link rel="stylesheet" href="pacing-enhancements.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the pacing plan</a>
+  <main id="main" tabindex="-1">
+    <header class="pace-hero">
+      <p class="eyebrow">Plan My Day · pacing demonstration</p>
+      <h1>Make room for what matters—without doing everything at once.</h1>
+      <p>Pacing is not about doing as little as possible. It can help you notice capacity, plan activity and recovery, and find a version that feels more sustainable today.</p>
+      <div class="handoff-summary" id="handoffSummary" hidden></div>
+    </header>
+
+    <nav class="pace-progress" aria-label="Pacing plan progress">
+      <span class="is-current" aria-current="step">Capacity</span><span>Activities</span><span>Compare</span><span>My plan</span>
+    </nav>
+
+    <form id="paceForm">
+      <section class="pace-step is-active" data-step="capacity" aria-labelledby="capacityHeading">
+        <div class="step-copy"><p class="step-number">Step 1</p><h2 id="capacityHeading">How much energy feels available today?</h2><p>Choose the closest estimate. This is a personal planning guide—not a measurement of your health or a prediction of symptoms.</p></div>
+        <fieldset class="capacity-field"><legend class="sr-only">Capacity available today</legend><div class="capacity-options">
+          <label><input type="radio" name="capacity" value="4"><span><i aria-hidden="true">●○○○○</i><strong>Very limited</strong><b>4 energy units</b><small>Keep plans especially light</small></span></label>
+          <label><input type="radio" name="capacity" value="8"><span><i aria-hidden="true">●●○○○</i><strong>Lower</strong><b>8 energy units</b><small>Adapt amounts and protect pauses</small></span></label>
+          <label><input type="radio" name="capacity" value="12" checked><span><i aria-hidden="true">●●●○○</i><strong>Some</strong><b>12 energy units</b><small>Balance activity and recovery</small></span></label>
+          <label><input type="radio" name="capacity" value="16"><span><i aria-hidden="true">●●●●○</i><strong>More</strong><b>16 energy units</b><small>Leave some flexibility</small></span></label>
+          <label><input type="radio" name="capacity" value="22"><span><i aria-hidden="true">●●●●●</i><strong>Plenty</strong><b>22 energy units</b><small>Enough to represent a busy day</small></span></label>
+        </div></fieldset>
+        <div class="step-actions"><a href="../pain-jigsaw/activity.html?return=pacing" class="secondary-button">Review activity learning</a><button type="button" class="primary-button" data-next="activities">Choose today’s activities</button></div>
+      </section>
+
+      <section class="pace-step" data-step="activities" aria-labelledby="activitiesHeading" hidden>
+        <div class="step-copy"><p class="step-number">Step 2</p><h2 id="activitiesHeading">What needs and deserves space today?</h2><p>Mix necessary, meaningful and restorative activity. Each estimate comes from the effort and amount you choose.</p></div>
+        <div class="goal-prompt"><label for="meaningfulActivity">One activity that would make today feel worthwhile</label><input id="meaningfulActivity" name="meaningfulActivity" placeholder="For example, spend time in the garden"></div>
+        <section class="activity-planner" aria-labelledby="activityPlannerHeading">
+          <div class="day-builder-heading"><div><p class="card-kicker">Your day board</p><h3 id="activityPlannerHeading">Place what matters into today</h3><p>Choose a tile. Then open a placed card only when you want to change its energy, amount or position.</p></div><div class="energy-tray" id="energyTray" aria-live="polite"></div></div>
+          <div class="activity-palette" aria-label="Activities to add">
+            <button type="button" data-add-activity="personal-care"><span aria-hidden="true">◆</span><strong>Personal care</strong><small>Necessary</small></button>
+            <button type="button" data-add-activity="meal"><span aria-hidden="true">◆</span><strong>Prepare a meal</strong><small>Necessary</small></button>
+            <button type="button" data-add-activity="connection"><span aria-hidden="true">●</span><strong>Time with someone</strong><small>Meaningful</small></button>
+            <button type="button" data-add-activity="outside"><span aria-hidden="true">●</span><strong>Time outside</strong><small>Meaningful</small></button>
+            <button type="button" data-add-activity="movement"><span aria-hidden="true">●</span><strong>Comfortable movement</strong><small>Meaningful</small></button>
+            <button type="button" data-add-activity="pause"><span aria-hidden="true">○</span><strong>Quiet pause</strong><small>Restorative</small></button>
+            <button type="button" data-add-activity="relax"><span aria-hidden="true">○</span><strong>Relaxation</strong><small>Restorative</small></button>
+            <button type="button" data-add-activity="custom"><span aria-hidden="true">＋</span><strong>Something else</strong><small>My own</small></button>
+          </div>
+          <div class="day-board" id="activityRows" aria-label="Activities placed into today"></div>
+          <div class="energy-summary" id="energySummary" role="status" aria-live="polite"></div>
+        </section>
+        <div class="step-actions"><button type="button" class="secondary-button" data-back="capacity">Back</button><button type="button" class="primary-button" data-next="compare">Compare my day</button></div>
+      </section>
+
+      <section class="pace-step" data-step="compare" id="compare" aria-labelledby="compareHeading" hidden>
+        <div class="step-copy"><p class="step-number">Step 3</p><h2 id="compareHeading">See the pattern, not just the list.</h2><p>The same intentions can create a different energy journey when they are resized, spaced out or followed by recovery.</p></div>
+        <div class="pattern-switch" role="group" aria-label="Compare activity patterns"><button type="button" data-pattern="boom" aria-pressed="true">All at once</button><button type="button" data-pattern="steady" aria-pressed="false">With pacing</button></div>
+        <figure class="energy-journey" id="energyJourney" aria-labelledby="journeyTitle" aria-describedby="journeyDescription">
+          <figcaption><p class="card-kicker" id="journeyKicker">All-at-once pattern</p><h3 id="journeyTitle">A better spell becomes a cue to keep going</h3><p id="journeyDescription">Activities cluster together and leave less room for recovery later.</p></figcaption>
+          <div class="journey-chart">
+            <div class="journey-scale" aria-hidden="true"><span>Available now</span><span>Reserve</span><span>Running low</span></div>
+            <div class="journey-plot">
+              <svg id="journeyLine" viewBox="0 0 900 300" role="img" aria-label="Illustrated energy level across today and tomorrow" preserveAspectRatio="none"><path class="reserve-zone" d="M0 190H900V235H0Z"></path><path class="energy-line-shadow" id="energyShadow"></path><path class="energy-line" id="energyPath"></path><circle class="energy-end" id="energyEnd" r="8"></circle></svg>
+              <div class="journey-events" id="journeyEvents"></div>
+              <div class="journey-axis" aria-hidden="true"><span>Morning</span><span>Midday</span><span>Later</span><span>Tomorrow</span></div>
+            </div>
+          </div>
+          <div class="journey-outcome" id="journeyOutcome"></div>
+        </figure>
+        <div class="transformation-note"><strong>The activities have not disappeared.</strong><p id="comparisonText">They can be resized, spaced out or moved so there is more room to recover and respond if the day changes.</p></div>
+        <div class="step-actions"><button type="button" class="secondary-button" data-back="activities">Change activities</button><button type="button" class="primary-button" data-next="plan">Adapt my plan</button></div>
+      </section>
+
+      <section class="pace-step" data-step="plan" aria-labelledby="planHeading" hidden>
+        <div class="step-copy"><p class="step-number">Step 4</p><h2 id="planHeading">Choose the amount that fits today.</h2><p>A flexible plan can keep you connected to what matters without turning your energy estimate into a target.</p></div>
+        <div class="plan-layout"><div class="plan-list" id="planList"></div><aside class="plan-reflection"><label for="recoveryChoice">What could support recovery?</label><textarea id="recoveryChoice" name="recoveryChoice" placeholder="For example, a quiet pause, changing position, asking for help…"></textarea><label for="lowerVersion">If capacity is lower than expected</label><textarea id="lowerVersion" name="lowerVersion" placeholder="A smaller version could be…"></textarea></aside></div>
+        <div class="save-note" role="status" id="saveStatus">This plan is saved only in this browser as you make it.</div>
+        <div class="step-actions"><button type="button" class="secondary-button" data-back="compare">Back to comparison</button><button type="submit" class="primary-button">Save today’s plan</button></div>
+      </section>
+    </form>
+
+    <section class="finish-panel" id="finishPanel" hidden tabindex="-1">
+      <p class="eyebrow">A compassionate plan for today</p><h2>Your plan leaves room to respond.</h2><p id="finishSummary"></p><div><a href="../pain-jigsaw/builder.html?journey=return" class="primary-button">Return to My Jigsaw</a><button type="button" class="secondary-button" id="editPlan">Edit my plan</button></div>
+    </section>
+    <aside class="safety-note"><strong>This tool is for reflection and planning.</strong> It does not measure your health or tell you what activity is medically safe. Follow individual advice you have been given and seek professional help for new or concerning symptoms.</aside>
+    <div class="pace-reset"><button type="button" class="start-again-button" id="startPacingAgain">Start again</button><small>Clear this pacing draft and begin with a fresh day.</small></div>
+  </main>
+  <script src="../shared/journey-bridge.js"></script>
+  <script src="pacing.js"></script>
+</body>
+</html>

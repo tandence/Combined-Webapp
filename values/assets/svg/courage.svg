@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f7ead8"/><stop offset="1" stop-color="#fffaf2"/></linearGradient>
+  <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e9b95f"/><stop offset="1" stop-color="#c9743d"/></linearGradient>
+  <linearGradient id="mount1" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d8895d"/><stop offset="1" stop-color="#edd1b9"/></linearGradient>
+  <linearGradient id="mount2" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#b96642"/><stop offset="1" stop-color="#e7b99b"/></linearGradient>
+  <filter id="grain"><feTurbulence baseFrequency=".7" numOctaves="2" seed="9" type="fractalNoise"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 .08 0"/><feBlend mode="multiply" in2="SourceGraphic"/></filter>
+</defs>
+<rect width="600" height="420" rx="28" fill="url(#sky)"/>
+<g stroke="#d59652" stroke-width="2" opacity=".75">
+<path d="M300 188 L135 151"/><path d="M300 188 L147 115"/><path d="M300 188 L168 83"/><path d="M300 188 L195 56"/><path d="M300 188 L227 35"/><path d="M300 188 L263 23"/><path d="M300 188 L300 19"/><path d="M300 188 L337 23"/><path d="M300 188 L373 35"/><path d="M300 188 L405 56"/><path d="M300 188 L432 83"/><path d="M300 188 L453 115"/><path d="M300 188 L465 151"/>
+</g>
+<circle cx="300" cy="192" r="58" fill="url(#sun)"/>
+<path d="M0 344 120 242l70 55 86-108 90 95 72-70 162 130v76H0Z" fill="url(#mount1)" filter="url(#grain)"/>
+<path d="M0 365 142 278l74 54 92-82 78 63 62-43 152 107v43H0Z" fill="url(#mount2)" opacity=".88"/>
+<path d="M0 388 126 326l78 35 105-58 86 53 71-28 134 70v22H0Z" fill="#f1ddcb"/>
+<g fill="none" stroke="#fff7ef" stroke-width="3" opacity=".65"><path d="m120 242 36 38 34 17"/><path d="m276 189 31 45 59 50"/><path d="m438 214 8 56"/></g>
+</svg>

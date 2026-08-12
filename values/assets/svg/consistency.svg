@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs><linearGradient id="co-path" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#b87331"/><stop offset="1" stop-color="#e1b45e"/></linearGradient></defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/>
+<circle cx="300" cy="198" r="154" fill="#f3e8d5"/>
+<path d="M93 340c81-18 92-108 174-107 76 1 81-100 155-112 37-6 64-27 84-55" fill="none" stroke="#d8c8aa" stroke-width="42" stroke-linecap="round"/>
+<path d="M93 340c81-18 92-108 174-107 76 1 81-100 155-112 37-6 64-27 84-55" fill="none" stroke="url(#co-path)" stroke-width="18" stroke-linecap="round" stroke-dasharray="3 31"/>
+<g fill="#55735e">
+ <circle cx="107" cy="326" r="9"/><circle cx="159" cy="290" r="9"/><circle cx="208" cy="246" r="9"/>
+ <circle cx="274" cy="231" r="9"/><circle cx="330" cy="197" r="9"/><circle cx="377" cy="147" r="9"/>
+ <circle cx="432" cy="117" r="9"/><circle cx="482" cy="83" r="9"/>
+</g>
+<path d="M478 48 520 63l-30 33" fill="#d7a64e" stroke="#8b642d" stroke-width="4" stroke-linejoin="round"/>
+</svg>

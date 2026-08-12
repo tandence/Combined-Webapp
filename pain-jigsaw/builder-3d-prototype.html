@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3D Builder Prototype | Pain Management Jigsaw</title>
+  <meta name="description" content="Practical information, tools and support from the Fife Pain Management Team for people living with persistent pain.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pain Management Jigsaw">
+  <meta property="og:title" content="Create My Jigsaw | Pain Management Jigsaw">
+  <meta property="og:description" content="Practical information, tools and support for living with pain.">
+  <meta property="og:image" content="assets/social/pain-management-jigsaw-social.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Pain Management Jigsaw: practical information, tools and support for living with pain.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Create My Jigsaw | Pain Management Jigsaw">
+  <meta name="twitter:description" content="Practical information, tools and support for living with pain.">
+  <meta name="twitter:image" content="assets/social/pain-management-jigsaw-social.png">
+  <meta name="twitter:image:alt" content="Pain Management Jigsaw: practical information, tools and support for living with pain.">
+  <link rel="stylesheet" href="styles.css?v=12" />
+  <link rel="stylesheet" href="builder.css?v=10" />
+  <link rel="stylesheet" href="builder-3d-prototype.css?v=1" />
+  <link rel="icon" href="assets/app-icons/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/app-icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/app-icons/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#147f89">
+</head>
+<body class="builder-3d-prototype">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+  <a href="index.html" class="back-link">← Back to Pain Management Jigsaw</a>
+
+  <div class="container builder-page">
+    <section class="card builder-intro">
+      <div class="card__body center-text">
+        <p class="product-kicker">3D visual prototype</p>
+        <h1 class="card__title">Create My Jigsaw</h1>
+        <p class="jigsaw-moment">Start with the area that feels most important to you today.</p>
+        <p class="card__text jigsaw-intro">
+          Your first choice becomes the centre of your jigsaw. Add more pieces around it to create one connected picture that reflects what matters to you right now.
+        </p>
+        <p class="prototype-note"><strong>Prototype:</strong> this version adds a layered, print-safe 3D finish to the joined jigsaw. The current builder remains unchanged.</p>
+      </div>
+    </section>
+
+    <div class="builder-layout">
+      <aside class="builder-panel builder-panel--library" aria-labelledby="libraryTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="step-label">Step 1</p>
+            <h2 id="libraryTitle">Choose your pieces</h2>
+          </div>
+          <span id="pieceCount" class="count-badge">0 selected</span>
+        </div>
+        <p id="libraryPrompt" class="panel-copy">Choose the piece that feels most important first. It will become your anchor.</p>
+
+        <details class="custom-piece-disclosure" open>
+          <summary>Add something personal</summary>
+          <p class="custom-piece-intro">Create a piece for something important that is not already listed.</p>
+          <div class="custom-add">
+            <label for="customPieceName">Name your own piece</label>
+            <input id="customPieceName" type="text" maxlength="40" placeholder="e.g. Family, work or routine" />
+            <button id="addCustomBtn" class="builder-btn builder-btn--secondary" type="button">Add custom piece</button>
+          </div>
+        </details>
+
+        <div id="pieceLibrary" class="piece-library" aria-label="Available jigsaw pieces"></div>
+      </aside>
+
+      <main id="main-content" tabindex="-1" class="builder-main">
+        <section class="builder-canvas-card" aria-labelledby="canvasTitle">
+          <div class="builder-canvas-heading">
+            <div>
+              <p class="step-label">Step 2</p>
+              <h2 id="canvasTitle"><span class="screen-canvas-title">Your Jigsaw Today</span><span class="print-canvas-title">Your Personal Picture</span></h2>
+              <p id="canvasInstruction" class="builder-canvas-subtitle">Choose your most important piece to begin.</p>
+            </div>
+            <p id="builderStatus" class="builder-status" aria-live="polite"></p>
+          </div>
+
+          <div id="canvas" class="builder-canvas" aria-label="Your connected jigsaw canvas">
+            <svg id="builderSvg" viewBox="-420 -320 840 640" role="group" aria-label="Selected jigsaw pieces"></svg>
+            <div id="canvasEmpty" class="builder-canvas__empty">
+              <div class="anchor-marker" aria-hidden="true"><span></span></div>
+              <p><strong>Choose your first piece</strong><br />This becomes the centre of your picture.</p>
+            </div>
+          </div>
+
+          <div id="pendingPlacement" class="pending-placement" role="status" aria-live="polite" hidden>
+            <img id="pendingThumb" alt="" />
+            <div>
+              <strong id="pendingLabel"></strong>
+              <span id="pendingMessage">Choose one of the highlighted spaces to connect this piece.</span>
+            </div>
+            <button id="cancelPendingBtn" class="text-button" type="button">Cancel</button>
+          </div>
+        </section>
+
+        <section class="builder-toolbar" aria-label="Jigsaw controls">
+          <div class="builder-toolbar__left">
+            <button id="finishBtn" class="builder-btn builder-btn--primary" type="button">Create My Picture</button>
+            <button id="printBtn" class="builder-btn builder-btn--primary" type="button">Save or print my picture</button>
+            <button id="resetBtn" class="builder-btn builder-btn--secondary" type="button">Start Again</button>
+          </div>
+          <div class="builder-toolbar__status">
+            <p id="focusCount" class="focus-count">Focus areas: 0 of 3</p>
+            <p class="save-note">Your jigsaw is saved in this browser on this device. Use “Start Again” to clear it.</p>
+          </div>
+        </section>
+
+        <section class="print-reflection" aria-labelledby="printReflectionTitle">
+          <p class="print-reflection__eyebrow">Reflection</p>
+          <h2 id="printReflectionTitle">My Pain Management Picture</h2>
+          <p class="print-reflection__intro">This picture brings together the areas you have chosen. Your first piece shows where you decided to begin.</p>
+          <div class="print-reflection__grid">
+            <div>
+              <h3>Where I’m beginning</h3>
+              <div id="printAnchorSummary" class="print-summary-list"></div>
+            </div>
+            <div>
+              <h3>My focus areas</h3>
+              <div id="printFocusSummary" class="print-summary-list"></div>
+            </div>
+            <div>
+              <h3>Also part of my picture</h3>
+              <div id="printOtherSummary" class="print-summary-list print-summary-list--others"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="nextStepsPanel" class="next-steps-panel" aria-labelledby="nextStepsTitle" hidden>
+          <h2 id="nextStepsTitle">Your next steps</h2>
+          <p class="next-steps-panel__intro">These are the areas you’ve chosen to focus on, based on what feels most important to you right now.</p>
+          <div id="nextStepIdeas" class="next-step-ideas"></div>
+          <label class="next-steps-label" for="nextStepsText">Small steps I feel ready to try this week</label>
+          <textarea id="nextStepsText" rows="3" maxlength="600" placeholder="Write your small step here…"></textarea>
+        </section>
+      </main>
+
+      <aside class="builder-panel builder-panel--summary" aria-labelledby="focusTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="step-label">Step 3</p>
+            <h2 id="focusTitle">Your Focus</h2>
+          </div>
+        </div>
+        <p class="panel-copy">Select a placed piece, then star up to three areas that feel most important right now.</p>
+        <ul id="summaryList" class="summary-list"><li>No focus areas selected yet.</li></ul>
+
+        <div id="selectedPiecePanel" class="selected-piece-panel" hidden>
+          <div class="selected-piece-heading">
+            <img id="selectedPieceThumb" alt="" />
+            <div>
+              <span class="selected-label">Selected piece</span>
+              <strong id="selectedPieceName"></strong>
+            </div>
+          </div>
+          <div class="selected-piece-actions">
+            <button id="focusPieceBtn" class="builder-btn builder-btn--secondary" type="button">☆ Add to focus</button>
+            <a id="learnMoreLink" class="builder-btn builder-btn--secondary" href="#">Learn more</a>
+            <button id="removePieceBtn" class="builder-btn builder-btn--danger" type="button">Remove</button>
+          </div>
+        </div>
+
+        <details class="help-disclosure">
+          <summary>Helpful prompts</summary>
+          <ul>
+            <li>Which area would you like to begin with?</li>
+            <li>What might support your anchor piece?</li>
+            <li>Is anything important missing?</li>
+          </ul>
+        </details>
+      </aside>
+    </div>
+  </div>
+
+  <script src="builder-3d-prototype.js"></script>
+  <script src="builder-3d-enhancer.js?v=1"></script>
+</body>
+</html>

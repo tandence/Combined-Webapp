@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dce8eb"/><stop offset=".58" stop-color="#f4ead8"/><stop offset="1" stop-color="#fff8ed"/></linearGradient>
+  <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#c8d7d8"/><stop offset="1" stop-color="#78999d"/></linearGradient>
+  <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efd083"/><stop offset="1" stop-color="#c88a38"/></linearGradient>
+  <linearGradient id="mist-left" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#fdf9f1"/><stop offset="1" stop-color="#edf1ef" stop-opacity=".28"/></linearGradient>
+  <linearGradient id="mist-right" x1="1" y1="0" x2="0" y2="0"><stop stop-color="#fdf9f1"/><stop offset="1" stop-color="#edf1ef" stop-opacity=".28"/></linearGradient>
+</defs>
+<g id="background">
+  <rect width="600" height="420" rx="28" fill="url(#sky)"/>
+  <path d="M0 252h600v168H0Z" fill="url(#water)" opacity=".72"/>
+  <path d="M235 252a65 65 0 0 1 130 0Z" fill="url(#sun)"/>
+  <path d="M85 252h430" stroke="#9f7845" stroke-width="4" stroke-linecap="round" opacity=".72"/>
+</g>
+<g id="opening-mist">
+  <path d="M0 83c95 5 168 39 221 101 31 37 42 83 33 138-83-34-167-36-254-7Z" fill="url(#mist-left)" opacity=".92"/>
+  <path d="M600 83c-95 5-168 39-221 101-31 37-42 83-33 138 83-34 167-36 254-7Z" fill="url(#mist-right)" opacity=".92"/>
+  <path d="M0 196c83-24 151-15 206 26 28 21 44 49 49 83-90-18-175-12-255 18Z" fill="#fffaf2" opacity=".55"/>
+  <path d="M600 196c-83-24-151-15-206 26-28 21-44 49-49 83 90-18 175-12 255 18Z" fill="#fffaf2" opacity=".55"/>
+</g>
+<g id="clear-water" fill="none" stroke="#6d9197" stroke-width="3" stroke-linecap="round" opacity=".48">
+  <path d="M121 304h358"/><path d="M158 330h284"/><path d="M197 356h206"/><path d="M236 379h128"/>
+</g>
+</svg>

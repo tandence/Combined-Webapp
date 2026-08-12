@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs>
+ <linearGradient id="c-sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dfe9e7"/><stop offset="1" stop-color="#f5eee5"/></linearGradient>
+ <linearGradient id="c-water" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#86a7aa"/><stop offset="1" stop-color="#547985"/></linearGradient>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/>
+<path d="M44 61h512v298H44Z" rx="120" fill="url(#c-sky)"/>
+<circle cx="300" cy="147" r="45" fill="#edc971" opacity=".88"/>
+<path d="M44 238c78-22 135-22 203 0s135 21 309-2v123H44Z" fill="url(#c-water)"/>
+<path d="M44 239c78-22 135-22 203 0s135 21 309-2" fill="none" stroke="#f4eee5" stroke-width="5" opacity=".75"/>
+<g fill="none" stroke="#d6e4e1" stroke-linecap="round">
+ <ellipse cx="300" cy="282" rx="51" ry="14" stroke-width="5"/>
+ <ellipse cx="300" cy="282" rx="103" ry="31" stroke-width="4" opacity=".75"/>
+ <ellipse cx="300" cy="282" rx="165" ry="49" stroke-width="3" opacity=".5"/>
+</g>
+<path d="M110 210c31-19 62-29 93-31M397 180c35 1 66 10 94 27" fill="none" stroke="#79958c" stroke-width="8" stroke-linecap="round" opacity=".55"/>
+</svg>

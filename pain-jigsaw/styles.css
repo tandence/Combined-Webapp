@@ -1,0 +1,705 @@
+/* =========================================================
+   1. ROOT VARIABLES
+========================================================= */
+:root {
+  --brand-strip: #1D4E89;
+  --link: #005EB8;
+  --text: #0b0c0c;
+  --muted: #505a5f;
+  --border: #d8dde0;
+  --bg: #f0f4f5;
+  --banner-h: 210px;
+
+  /* Final matched jigsaw colour palette */
+  --piece-understand: #1A8F9E;   /* deeper teal */
+  --piece-reconnect: #E4BE6C;    /* warm gold */
+  --piece-acceptance: #E4BE6C;
+  --piece-communication: #D8C7C7; /* soft neutral pink */
+  --piece-flare: #1A8F9E;        /* deep teal-blue (strong) */
+  --piece-toolbox: #B9D3DD;      /* pale blue-grey */
+  --piece-activity: #56B3A7;     /* soft green-blue */
+  --piece-movement: #E07A7A;     /* coral red */
+  --piece-medication: #E47C7C;   /* slightly softer medical red */
+  --piece-thoughts: #1A8F9E;     /* strong teal */
+  --piece-sleep: #B9D3DD;        /* soft calming blue */
+  --piece-nutrition: #E2CFCF;    /* pale neutral pink */
+  --piece-relaxation: #E4BE6C;   /* same as acceptance */
+  --piece-goals: #1A8F9E;        /* deeper teal */
+
+  /* Typography + spacing */
+  --nhs-blue: #2A5C8F;
+  --card-pad-x: 1.5rem;
+}
+
+/* =========================================================
+   2. PIECE GLOW COLOURS
+========================================================= */
+.piece--understand {
+  --piece-glow: rgba(26, 143, 158, 0.25);
+}
+
+.piece--reconnect,
+.piece--acceptance,
+.piece--relaxation {
+  --piece-glow: rgba(228, 190, 108, 0.25);
+}
+
+.piece--communication {
+  --piece-glow: rgba(216, 199, 199, 0.25);
+}
+
+.piece--flare,
+.piece--thoughts,
+.piece--goals {
+  --piece-glow: rgba(26, 143, 158, 0.25);
+}
+
+.piece--toolbox,
+.piece--sleep {
+  --piece-glow: rgba(185, 211, 221, 0.25);
+}
+
+.piece--activity {
+  --piece-glow: rgba(86, 179, 167, 0.25);
+}
+
+.piece--movement {
+  --piece-glow: rgba(224, 122, 122, 0.25);
+}
+
+.piece--medication {
+  --piece-glow: rgba(228, 124, 124, 0.25);
+}
+
+.piece--nutrition {
+  --piece-glow: rgba(226, 207, 207, 0.25);
+}
+
+/* =========================================================
+   3. BASE / GLOBAL STYLES
+========================================================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Frutiger W01", Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.55;
+}
+
+a {
+  color: var(--link);
+}
+
+.container {
+  width: min(1300px, 100%);
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* =========================================================
+   3A. GLOBAL HEADINGS / TYPOGRAPHY
+========================================================= */
+h1 {
+  color: var(--nhs-blue);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+h2 {
+  color: var(--nhs-blue);
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin: 0 0 0.4rem;
+}
+
+h3 {
+  color: var(--brand-strip);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* =========================================================
+   4. CARD LAYOUT + HEADER
+========================================================= */
+.card {
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.card__banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--banner-h);
+  position: relative;
+}
+
+.piece-frame {
+  position: relative;
+  z-index: 0;
+  background: #fff;
+  padding: 20px;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  max-height: none;
+  overflow: hidden;
+}
+
+.piece-img {
+  max-height: 148px;
+  max-width: 100%;
+  height: auto;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.card__body {
+  padding: 1.5rem var(--card-pad-x);
+  text-align: center;
+}
+
+.card__title {
+  margin: 0 0 1.5rem;
+  font-size: 2rem;
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--nhs-blue);
+ letter-spacing: 0.3px;
+}
+
+.card__text {
+  margin: 0 auto 0.5rem;
+  max-width: 600px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+
+
+/* =========================================================
+   5. JIGSAW BANNER COLOUR MAPPING
+========================================================= */
+.piece--understand .card__banner { background: var(--piece-understand); }
+.piece--reconnect .card__banner { background: var(--piece-reconnect); }
+.piece--acceptance .card__banner { background: var(--piece-acceptance); }
+.piece--communication .card__banner { background: var(--piece-communication); }
+.piece--flare .card__banner { background: var(--piece-flare); }
+.piece--toolbox .card__banner { background: var(--piece-toolbox); }
+.piece--activity .card__banner { background: var(--piece-activity); }
+.piece--movement .card__banner { background: var(--piece-movement); }
+.piece--medication .card__banner { background: var(--piece-medication); }
+.piece--thoughts .card__banner { background: var(--piece-thoughts); }
+.piece--sleep .card__banner { background: var(--piece-sleep); }
+.piece--nutrition .card__banner { background: var(--piece-nutrition); }
+.piece--relaxation .card__banner { background: var(--piece-relaxation); }
+.piece--goals .card__banner { background: var(--piece-goals); }
+
+/* =========================================================
+   6. PAGE LAYOUT
+========================================================= */
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   7. MAIN CONTENT SECTIONS
+========================================================= */
+main section {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+main section p {
+  text-align: left;
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+main section h2,
+main section ul,
+main section li,
+main section a {
+  text-align: left;
+}
+
+main section ul {
+  margin-top: 0.25rem;
+  padding-left: 1.2rem;
+}
+
+main section li {
+  color: var(--muted);
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 0.3rem;
+}
+
+/* =========================================================
+   8. SIDEBAR
+========================================================= */
+aside {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  height: fit-content;
+}
+
+aside p {
+  margin-top: 0;
+}
+
+aside h2 {
+  margin-bottom: 0.4rem;
+}
+
+.sidebar-block {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sidebar-block:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-block p {
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+  text-align: left;
+}
+
+.sidebar-block h2,
+.sidebar-block ul,
+.sidebar-block li,
+.sidebar-block a {
+  text-align: left;
+}
+
+/* =========================================================
+   CARD / CONTENT HEADING COLOUR FIX
+========================================================= */
+main section h2,
+.sidebar-block h2,
+.mini h2,
+aside h2 {
+  color: var(--nhs-blue);
+}
+
+
+/* =========================================================
+   9. MINI CARDS / GRID
+========================================================= */
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.mini {
+  border: 1px solid var(--border);
+  padding: 1rem;
+  background: #fff;
+  border-radius: 6px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mini h2 {
+  margin-bottom: 0.4rem;
+}
+
+.mini p {
+  margin-bottom: 0.5rem;
+}
+
+.mini ul {
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.mini li {
+  margin-bottom: 0.4rem;
+}
+
+.mini .card__text {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+  text-align: left;
+}
+
+.mini:hover,
+.sidebar-block:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 0 6px var(--piece-glow);
+}
+
+/* =========================================================
+   10. JIGSAW INDEX PAGE
+========================================================= */
+.jigsaw-section {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.jigsaw-section > * + * {
+  margin-top: 0.75rem;
+}
+/* Group intro + explore more tightly */
+.jigsaw-intro-card + .jigsaw-prompt {
+  margin-top: 0.4rem;
+}
+
+/* Give space BEFORE the jigsaw (this is your key breakpoint) */
+.jigsaw-prompt + .jigsaw-wrap {
+  margin-top: 1.5rem;
+}
+
+/* Space before the Create section */
+.jigsaw-wrap + .create-jigsaw-card {
+  margin-top: 1.75rem;
+}
+.jigsaw-wrap {
+  position: relative;
+  max-width: 1100px;
+  margin: 2rem auto;
+  background: #fff;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-top: 2px solid rgba(26, 143, 158, 0.6);
+  border-right: 2px solid rgba(224, 122, 122, 0.6);
+  border-bottom: 2px solid rgba(228, 190, 108, 0.6);
+  border-left: 2px solid rgba(86, 179, 167, 0.6);
+}
+
+.jigsaw-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hotspots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  fill: transparent;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+/* =========================================================
+   11. JIGSAW INTRO / PROMPT CARDS
+========================================================= */
+.jigsaw-intro {
+  max-width: 850px;
+  margin-top: 0.5rem;
+  text-align: justify;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.jigsaw-intro-card {
+  margin: 1.25rem auto 1rem auto;
+  background: #f7f9fa;
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--nhs-blue);
+}
+
+
+
+.jigsaw-prompt {
+  margin: 1.25rem auto;
+  background: #fff;
+
+  border: 1px solid var(--border);         /* base */
+  border-right: 4px solid var(--nhs-blue); 
+
+}
+
+
+.jigsaw-prompt__title {
+  color: var(--nhs-blue);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.jigsaw-moment {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--nhs-blue);
+  margin: 0 0 1rem;
+}
+
+.watch-text {
+  margin-bottom: 1.5rem;
+}
+
+/* =========================================================
+   12. EMBEDS / VIDEO BLOCKS
+========================================================= */
+.embed {
+  position: relative;
+  padding-top: 56.25%;
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  max-height: 360px;
+}
+
+.embed + .embed {
+  margin-top: 1.25rem;
+}
+
+/* =========================================================
+   13. UTILITIES
+========================================================= */
+.center-text {
+  text-align: center;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 8px 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  background: #f3f2f1;
+}
+
+.jigsaw-prompt.create-jigsaw-card {
+  border: 1px solid var(--border);         /* reset */
+  border-left: none;                       /* ✅ no left */
+  border-left: 4px solid var(--piece-understand); /* ✅ RIGHT */
+}
+
+.cta-button {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 18px;
+
+  background: var(--nhs-blue);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+
+  font-weight: 600;
+  font-size: 1rem;
+
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.cta-button:hover {
+  background: #1f4a77;
+  transform: translateY(-1px);
+}
+.explore-heading {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+.jigsaw-intro-card {
+  margin-bottom: 8px;   /* tighten this */
+}
+
+.builder-instructions-card {
+  margin-top: 8px;      /* match above */
+}
+.builder-layout {
+  margin-top: 20px;   /* increase from current */
+}
+.builder-panel {
+  padding: 18px;   /* standardise internal spacing */
+}
+.builder-btn--secondary {
+  background: #ffffff;
+  color: var(--nhs-blue);
+  border: 2px solid var(--nhs-blue);
+}
+
+.builder-btn--secondary:hover {
+  background: #f3f8fc;
+}
+
+/* =========================================================
+   14. ACCESSIBILITY + POLISH
+========================================================= */
+.skip-link {
+  position: fixed;
+  top: .5rem;
+  left: .5rem;
+  z-index: 10000;
+  padding: .75rem 1rem;
+  border: 2px solid #212b32;
+  border-radius: 4px;
+  background: #ffeb3b;
+  color: #212b32;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-150%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.resource-placeholder {
+  color: var(--muted);
+}
+
+:focus-visible {
+  outline: 3px solid #ffbf47;
+  outline-offset: 3px;
+}
+
+main:focus {
+  outline: none;
+}
+
+.back-link,
+.cta-button,
+.builder-btn {
+  min-height: 44px;
+}
+
+.card__banner {
+  overflow: hidden;
+  background-image:
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,.3), transparent 54%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.035));
+}
+
+.piece-frame {
+  padding: 20px;
+  background: #fff;
+  height: 100%;
+}
+
+.piece-img {
+  position: relative;
+  z-index: 1;
+  filter: none;
+}
+
+.piece-frame::after {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body[class*="piece--"] > .container > .card {
+    animation: topic-card-arrive .48s cubic-bezier(.2,.75,.25,1) both;
+  }
+
+  body[class*="piece--"] .piece-img {
+    animation: topic-piece-arrive .62s .08s cubic-bezier(.18,.8,.25,1) both;
+  }
+
+  body[class*="piece--"] .layout > main,
+  body[class*="piece--"] .layout > aside {
+    animation: topic-content-arrive .42s .16s ease-out both;
+  }
+
+  body[class*="piece--"] .layout > aside {
+    animation-delay: .22s;
+  }
+
+  @keyframes topic-card-arrive {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes topic-piece-arrive {
+    from { opacity: 0; transform: translateY(-8px) scale(.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes topic-content-arrive {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --banner-h: 184px;
+  }
+
+  .piece-img {
+    max-height: 128px;
+  }
+
+  .piece-frame {
+    padding: 20px;
+  }
+}

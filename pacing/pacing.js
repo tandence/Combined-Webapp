@@ -1,0 +1,220 @@
+const STORAGE_KEY = "living-well-pacing-v4";
+const HANDOFF_KEY = "life-compass-handoff-values-45-v1";
+const activityOptions = [
+  ["", "Choose an activity"],
+  ["personal-care", "Necessary — personal care"],
+  ["meal", "Necessary — prepare a meal"],
+  ["household", "Necessary — household task"],
+  ["appointment", "Necessary — appointment or errand"],
+  ["connection", "Meaningful — time with someone"],
+  ["outside", "Meaningful — time outside"],
+  ["movement", "Meaningful — comfortable movement"],
+  ["hobby", "Meaningful — hobby or interest"],
+  ["pause", "Restorative — quiet recovery pause"],
+  ["relax", "Restorative — relaxation or mindfulness"],
+  ["custom", "Something else…"]
+];
+const labels = Object.fromEntries(activityOptions);
+const effortPoints = { light: 2, medium: 4, high: 6 };
+const versionFactors = { full: 1, smaller: .67, minimum: .33 };
+const makeId = () => globalThis.crypto?.randomUUID?.() || `activity-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const exampleRows = () => [
+  { id: makeId(), activity: "household", custom: "", effort: "high", version: "full", timing: "morning", recovery: "short" },
+  { id: makeId(), activity: "connection", custom: "", effort: "medium", version: "full", timing: "midday", recovery: "short" },
+  { id: makeId(), activity: "relax", custom: "", effort: "light", version: "minimum", timing: "afternoon", recovery: "none" }
+];
+const freshState = () => ({ capacity: 12, activities: [], meaningfulActivity: "", recoveryChoice: "", lowerVersion: "", pattern: "boom" });
+let state = load();
+
+function load() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    return saved && Array.isArray(saved.activities) ? { ...freshState(), ...saved } : freshState();
+  } catch { return freshState(); }
+}
+function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {} }
+function escapeHtml(value = "") { return String(value).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[c])); }
+function handoff() { try { return JSON.parse(sessionStorage.getItem(HANDOFF_KEY) || "null"); } catch { return null; } }
+function rowLabel(row) { return row.activity === "custom" ? row.custom.trim() || "My activity" : labels[row.activity] || "Activity"; }
+function rowEnergy(row, adapted = true) {
+  const effort = effortPoints[row.effort] || 1;
+  const factor = adapted ? versionFactors[row.version] || 1 : 1;
+  return Math.max(1, Math.round(effort * factor));
+}
+function optionMarkup(options, current) { return options.map(([value,label]) => `<option value="${value}" ${value === current ? "selected" : ""}>${label}</option>`).join(""); }
+
+const incoming = handoff();
+if (new URLSearchParams(location.search).get("demo") === "family") {
+  state = { ...freshState(), activities:exampleRows(), meaningfulActivity:"Spend a little time gardening and still have energy for family", recoveryChoice:"Sit somewhere comfortable with a drink between activities", lowerVersion:"Tend one pot for ten minutes, or sit outside and notice the garden" };
+}
+if (incoming?.goal) {
+  const summary = document.querySelector("#handoffSummary");
+  const north = incoming.values?.find(value => value.id === incoming.northStar)?.title || "what matters";
+  summary.hidden = false;
+  summary.innerHTML = `<strong>Carried from your compass: ${escapeHtml(north)}</strong><br>${escapeHtml(incoming.goal.statement || incoming.goal.firstStep || "Your meaningful next step")}`;
+  if (!state.meaningfulActivity) state.meaningfulActivity = incoming.goal.firstStep || incoming.goal.statement || "";
+}
+
+const rowsHost = document.querySelector("#activityRows");
+function renderRowsLegacy() {
+  rowsHost.innerHTML = state.activities.map((row,index) => `<article class="activity-row" data-row="${row.id}">
+    <header><span>${index + 1}</span><strong>${escapeHtml(rowLabel(row))}</strong><b class="row-energy">${row.activity ? `${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"}` : "Choose an activity"}</b><button type="button" data-remove-row aria-label="Remove ${escapeHtml(rowLabel(row))}">Remove</button></header>
+    <div class="activity-fields">
+      <label>Activity<select data-field="activity">${optionMarkup(activityOptions,row.activity)}</select></label>
+      <label class="custom-name" ${row.activity === "custom" ? "" : "hidden"}>Name it<input data-field="custom" value="${escapeHtml(row.custom)}" placeholder="Name this activity"></label>
+      <label>Effort today<select data-field="effort">${optionMarkup([["light","Light — 2 units"],["medium","Moderate — 4 units"],["high","Higher — 6 units"]],row.effort)}</select></label>
+      <label>Amount today<select data-field="version">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"]],row.version)}</select></label>
+      <label>Timing<select data-field="timing">${optionMarkup([["morning","Morning"],["midday","Midday"],["afternoon","Afternoon"],["evening","Evening"]],row.timing)}</select></label>
+      <label>Recovery after<select data-field="recovery">${optionMarkup([["none","No planned pause"],["short","Short pause"],["long","Longer recovery"]],row.recovery)}</select></label>
+    </div>
+  </article>`).join("");
+  rowsHost.querySelectorAll("select,input").forEach(control => control.addEventListener("change", updateRow));
+  rowsHost.querySelectorAll("input").forEach(control => control.addEventListener("input", updateRow));
+  rowsHost.querySelectorAll("[data-remove-row]").forEach(button => button.addEventListener("click", () => {
+    if (state.activities.length === 1) return;
+    state.activities = state.activities.filter(row => row.id !== button.closest("[data-row]").dataset.row); save(); renderRows();
+  }));
+  renderEnergySummary();
+}
+function renderEnergySummary() {
+  const total = state.activities.filter(row => row.activity).reduce((sum,row) => sum + rowEnergy(row),0);
+  const difference = state.capacity - total;
+  const summary = document.querySelector("#energySummary");
+  if (!summary) return;
+  const detail = difference > 0
+    ? `${difference} ${difference === 1 ? "unit is" : "units are"} left unallocated, giving the day more flexibility.`
+    : difference === 0
+      ? "The estimate uses all the energy you selected, leaving no flexibility for change."
+      : `This is ${Math.abs(difference)} ${Math.abs(difference) === 1 ? "unit" : "units"} above today’s estimate. Try a smaller amount, reduce an effort estimate or move something.`;
+  summary.className = `energy-summary ${difference < 0 ? "is-over" : difference === 0 ? "is-full" : "is-within"}`;
+  summary.innerHTML = `<strong>${total} of ${state.capacity} energy units allocated</strong><span>${detail}</span>`;
+  const tray = document.querySelector("#energyTray");
+  if (tray) tray.innerHTML = `<strong>Energy today</strong><div class="energy-token-line" aria-label="${Math.max(0,difference)} of ${state.capacity} energy units unallocated">${Array.from({length:state.capacity},(_,index) => `<i class="${index < total ? "is-placed" : ""}"></i>`).join("")}</div><small>${Math.max(0,difference)} unallocated</small>`;
+}
+function updateRow(event) {
+  const article = event.target.closest("[data-row]");
+  const row = state.activities.find(item => item.id === article.dataset.row);
+  row[event.target.dataset.field] = event.target.value;
+  const wasOpen = article.querySelector("details")?.open;
+  save(); renderRows();
+  if (wasOpen) rowsHost.querySelector(`[data-row="${row.id}"] details`)?.setAttribute("open", "");
+}
+const timingOptions = [["morning","Morning"],["midday","Midday"],["afternoon","Later"],["evening","Evening"]];
+const activityType = activity => ["personal-care","meal","household","appointment"].includes(activity) ? "necessary" : ["pause","relax"].includes(activity) ? "restorative" : activity === "custom" ? "personal" : "meaningful";
+const energyDots = count => Array.from({length:count},() => "<i></i>").join("");
+function renderRows() {
+  rowsHost.innerHTML = timingOptions.map(([timing,title]) => {
+    const cards = state.activities.filter(row => row.activity && row.timing === timing).map(row => `<article class="day-card-tile is-${activityType(row.activity)}" data-row="${row.id}">
+      <div class="day-card-tile__face"><span class="tile-symbol" aria-hidden="true">${activityType(row.activity) === "necessary" ? "◆" : activityType(row.activity) === "restorative" ? "○" : activityType(row.activity) === "personal" ? "+" : "●"}</span><div><small>${activityType(row.activity)}</small><strong>${escapeHtml(rowLabel(row))}</strong></div><div class="tile-energy" aria-label="${rowEnergy(row)} energy units">${energyDots(rowEnergy(row))}</div></div>
+      <details><summary>Adjust card</summary><div class="tile-controls">
+        <label class="custom-name" ${row.activity === "custom" ? "" : "hidden"}>Name it<input data-field="custom" value="${escapeHtml(row.custom)}" placeholder="Name this activity"></label>
+        <label>Effort<select data-field="effort">${optionMarkup([["light","Light · 2"],["medium","Moderate · 4"],["high","Higher · 6"]],row.effort)}</select></label>
+        <label>Amount<select data-field="version">${optionMarkup([["full","Usual"],["smaller","Smaller"],["minimum","Minimum"]],row.version)}</select></label>
+        <label>Recovery<select data-field="recovery">${optionMarkup([["none","No planned pause"],["short","Short pause"],["long","Longer recovery"]],row.recovery)}</select></label>
+        <div class="tile-moves"><button type="button" data-move="earlier">Earlier</button><button type="button" data-move="later">Later</button><button type="button" data-remove-row>Remove</button></div>
+      </div></details>
+    </article>`).join("");
+    return `<section class="day-zone" data-zone="${timing}"><header><span aria-hidden="true">${timing === "morning" ? "☼" : timing === "midday" ? "◒" : timing === "afternoon" ? "◐" : "☾"}</span><h4>${title}</h4></header><div class="day-zone__cards">${cards || `<p class="empty-zone">Room left open</p>`}</div></section>`;
+  }).join("");
+  rowsHost.querySelectorAll("select,input").forEach(control => control.addEventListener("change", updateRow));
+  rowsHost.querySelectorAll("input").forEach(control => control.addEventListener("input", updateRow));
+  rowsHost.querySelectorAll("[data-remove-row]").forEach(button => button.addEventListener("click", () => { state.activities = state.activities.filter(row => row.id !== button.closest("[data-row]").dataset.row); save(); renderRows(); }));
+  rowsHost.querySelectorAll("[data-move]").forEach(button => button.addEventListener("click", () => { const row = state.activities.find(item => item.id === button.closest("[data-row]").dataset.row); const index = timingOptions.findIndex(([value]) => value === row.timing); row.timing = timingOptions[button.dataset.move === "earlier" ? Math.max(0,index - 1) : Math.min(timingOptions.length - 1,index + 1)][0]; save(); renderRows(); }));
+  renderEnergySummary();
+}
+document.querySelectorAll("[data-add-activity]").forEach(button => button.addEventListener("click", () => {
+  const activity = button.dataset.addActivity;
+  state.activities.push({ id:makeId(), activity, custom:"", effort:activityType(activity) === "restorative" ? "light" : "medium", version:"full", timing:"afternoon", recovery:activityType(activity) === "restorative" ? "none" : "short" }); save(); renderRows();
+  rowsHost.querySelector(`[data-row="${state.activities.at(-1).id}"]`)?.scrollIntoView({behavior:"smooth",block:"center"});
+}));
+renderRows();
+
+document.querySelectorAll('[name="capacity"]').forEach(input => { input.checked = Number(input.value) === state.capacity; input.addEventListener("change", () => { state.capacity = Number(input.value); save(); renderEnergySummary(); }); });
+document.querySelector("#meaningfulActivity").value = state.meaningfulActivity;
+document.querySelector("#recoveryChoice").value = state.recoveryChoice;
+document.querySelector("#lowerVersion").value = state.lowerVersion;
+document.querySelector("#meaningfulActivity").addEventListener("input", event => { state.meaningfulActivity = event.target.value; save(); });
+document.querySelector("#recoveryChoice").addEventListener("input", event => { state.recoveryChoice = event.target.value; save(); document.querySelector("#saveStatus").textContent = "Saved in this browser."; });
+document.querySelector("#lowerVersion").addEventListener("input", event => { state.lowerVersion = event.target.value; save(); document.querySelector("#saveStatus").textContent = "Saved in this browser."; });
+
+const steps = ["capacity","activities","compare","plan"];
+function showStep(id) {
+  document.body.classList.toggle("pace-is-beyond-intro", id !== "capacity");
+  document.querySelectorAll(".pace-step").forEach(section => { const active = section.dataset.step === id; section.hidden = !active; section.classList.toggle("is-active",active); });
+  document.querySelectorAll(".pace-progress span").forEach((item,index) => { const current = steps.indexOf(id); item.classList.toggle("is-current",index === current); item.classList.toggle("is-complete",index < current); if (index === current) item.setAttribute("aria-current","step"); else item.removeAttribute("aria-current"); });
+  if (id === "compare") renderComparison(state.pattern);
+  if (id === "plan") renderPlan();
+  document.querySelector(`[data-step="${id}"] h2`)?.focus({preventScroll:true});
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll("[data-next]").forEach(button => button.addEventListener("click", () => {
+  if (button.dataset.next === "compare" && !state.activities.some(row => row.activity)) return alert("Choose at least one activity to compare.");
+  showStep(button.dataset.next);
+}));
+document.querySelectorAll("[data-back]").forEach(button => button.addEventListener("click", () => showStep(button.dataset.back)));
+
+const patternCopy = {
+  boom: { kicker:"All-at-once pattern", title:"A better spell becomes a cue to keep going", description:"Activities cluster together and leave less room for recovery later." },
+  steady: { kicker:"Steadier experiment", title:"Activity, pauses and flexible versions", description:"The same priorities are spread out, adapted and given recovery space." }
+};
+function chartData(pattern) {
+  const rows = state.activities.filter(row => row.activity);
+  const capacityY = 55;
+  const unitDrop = 135 / Math.max(4,state.capacity);
+  let currentY = capacityY;
+  const points = [{x:30,y:currentY}];
+  const events = [];
+  if (pattern === "boom") {
+    rows.forEach((row,index) => { const x = 150 + index * Math.min(145,560 / Math.max(1,rows.length)); currentY += rowEnergy(row) * unitDrop; currentY=Math.min(270,currentY); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:"activity"}); });
+    currentY = Math.min(280,currentY + 30); points.push({x:690,y:currentY}); points.push({x:870,y:Math.max(150,currentY - 15)});
+  } else {
+    rows.forEach((row,index) => { const x = 120 + index * Math.min(180,620 / Math.max(1,rows.length)); currentY += rowEnergy(row,true) * unitDrop; currentY=Math.min(245,currentY); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:"activity"}); if (row.recovery !== "none") { const pauseX=x+60; points.push({x:pauseX,y:currentY}); events.push({x:pauseX,y:currentY,label:row.recovery === "long" ? "Longer recovery space" : "Short pause",kind:"recovery"}); } });
+    points.push({x:870,y:currentY});
+  }
+  return { points,events,end:points.at(-1) };
+}
+function pathFrom(points) { return points.map((point,index) => `${index ? "L" : "M"}${point.x} ${point.y}`).join(" "); }
+function renderComparison(pattern = "boom") {
+  state.pattern = pattern; save();
+  document.querySelectorAll("[data-pattern]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.pattern === pattern)));
+  const copy = patternCopy[pattern];
+  document.querySelector("#journeyKicker").textContent = copy.kicker; document.querySelector("#journeyTitle").textContent = copy.title; document.querySelector("#journeyDescription").textContent = copy.description;
+  const data = chartData(pattern); const d = pathFrom(data.points);
+  document.querySelector("#energyPath").setAttribute("d",d); document.querySelector("#energyShadow").setAttribute("d",d);
+  document.querySelector("#energyEnd").setAttribute("cx",data.end.x); document.querySelector("#energyEnd").setAttribute("cy",data.end.y);
+  document.querySelector("#energyJourney").dataset.pattern = pattern;
+  document.querySelector("#journeyEvents").innerHTML = data.events.map(event => `<span class="journey-event is-${event.kind}" style="--event-x:${event.x / 9}%;--event-y:${event.y / 3}%"><i></i><b>${escapeHtml(event.label)}</b></span>`).join("");
+  const total = state.activities.filter(row => row.activity).reduce((sum,row) => sum + rowEnergy(row),0);
+  const reserve = state.capacity-total;
+  const allocation = `${Math.round(total)} of ${state.capacity} energy units allocated`;
+  document.querySelector("#journeyOutcome").innerHTML = pattern === "boom" ? `<strong>Less room later</strong><p>${allocation}. Clustering activity can leave less opportunity to respond if the day changes.</p>` : `<strong>${reserve > 0 ? `${reserve} energy ${reserve === 1 ? "unit" : "units"} left unallocated` : reserve === 0 ? "No energy left unallocated" : `${Math.abs(reserve)} units above today’s estimate`}</strong><p>${allocation}. Adapted amounts and recovery spaces create a clearer stopping point; pauses are not treated as restoring energy.</p>`;
+}
+document.querySelectorAll("[data-pattern]").forEach(button => button.addEventListener("click", () => renderComparison(button.dataset.pattern)));
+
+function renderPlan() {
+  document.querySelector("#planList").innerHTML = state.activities.filter(row => row.activity).map(row => `<article class="plan-row"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"} · ${row.timing} · ${row.effort === "medium" ? "moderate" : row.effort} effort · ${row.recovery === "none" ? "no planned pause" : row.recovery + " recovery"}</small></div><select data-version="${row.id}" aria-label="Amount today for ${escapeHtml(rowLabel(row))}">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"],["move","Move to another day"],["help","Ask for help"]],row.version)}</select></article>`).join("");
+}
+document.querySelector("#paceForm").addEventListener("submit", event => {
+  event.preventDefault(); document.querySelectorAll("[data-version]").forEach(select => { const row=state.activities.find(item=>item.id===select.dataset.version); if(row) row.version=select.value; }); save();
+  document.querySelectorAll(".pace-step").forEach(section => section.hidden=true); document.querySelector(".pace-progress").hidden=true;
+  const meaningful=state.meaningfulActivity || state.activities.find(row=>row.activity)?.custom || rowLabel(state.activities.find(row=>row.activity));
+  document.querySelector("#finishSummary").textContent=`You have made space for ${meaningful.toLowerCase()}, with amounts and recovery choices that can change with the day.`;
+  const panel=document.querySelector("#finishPanel"); panel.hidden=false; panel.focus(); window.scrollTo({top:0,behavior:"smooth"});
+});
+document.querySelector("#editPlan").addEventListener("click",()=>{ document.querySelector("#finishPanel").hidden=true; document.querySelector(".pace-progress").hidden=false; showStep("plan"); });
+document.querySelector("#startPacingAgain").addEventListener("click", () => {
+  if (!window.confirm("Clear this pacing draft and start again?")) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  state = freshState();
+  document.querySelector("#finishPanel").hidden = true;
+  document.querySelector(".pace-progress").hidden = false;
+  document.querySelector("#meaningfulActivity").value = "";
+  document.querySelector("#recoveryChoice").value = "";
+  document.querySelector("#lowerVersion").value = "";
+  document.querySelectorAll('[name="capacity"]').forEach(input => { input.checked = Number(input.value) === state.capacity; });
+  renderRows();
+  document.querySelector("#saveStatus").textContent = "Fresh pacing plan started. Nothing from the previous draft remains.";
+  history.replaceState(null, "", location.pathname);
+  showStep("capacity");
+});
+if(steps.includes(location.hash.slice(1))) showStep(location.hash.slice(1));

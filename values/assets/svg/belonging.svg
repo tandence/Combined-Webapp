@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs>
+  <radialGradient id="halo"><stop stop-color="#f5e8ca"/><stop offset="1" stop-color="#ead8ae" stop-opacity=".2"/></radialGradient>
+  <linearGradient id="leaf-a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#789687"/><stop offset="1" stop-color="#355f50"/></linearGradient>
+  <linearGradient id="leaf-b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#91a997"/><stop offset="1" stop-color="#4b7562"/></linearGradient>
+  <linearGradient id="leaf-c" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6f8d82"/><stop offset="1" stop-color="#2f5960"/></linearGradient>
+  <linearGradient id="leaf-d" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a6b28c"/><stop offset="1" stop-color="#627b58"/></linearGradient>
+</defs>
+<g id="background">
+  <rect width="600" height="420" rx="28" fill="#fbf6ed"/>
+  <circle cx="300" cy="203" r="151" fill="url(#halo)"/>
+</g>
+<g id="shared-stem" fill="none" stroke="#496c59" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M300 347c3-65 1-125-1-190"/><path d="m299 259-91-65"/><path d="m299 286 103-74"/><path d="m298 218 4-95"/><path d="m299 307-76 25"/>
+</g>
+<g id="leaves" stroke="#f3eee5" stroke-width="2" stroke-linejoin="round">
+  <path d="M207 194c-57 9-96-18-112-73 60-15 108 9 122 66-2 3-6 5-10 7Z" fill="url(#leaf-a)"/>
+  <path d="M401 211c49-30 98-19 137 28-45 43-99 43-143-16 1-5 3-8 6-12Z" fill="url(#leaf-b)"/>
+  <path d="M302 124c-37-39-33-86 10-126 44 39 45 86 2 129-5 1-8 0-12-3Z" fill="url(#leaf-c)"/>
+  <path d="M224 330c-47 10-80-12-97-58 46-21 86-4 108 45-2 6-5 10-11 13Z" fill="url(#leaf-d)"/>
+</g>
+<g id="veins" fill="none" stroke="#dfe8df" stroke-width="2" stroke-linecap="round" opacity=".82">
+  <path d="m112 129 95 58"/><path d="m524 238-123-18"/><path d="m310 17-7 107"/><path d="m143 277 81 48"/>
+</g>
+<circle id="gold-centre" cx="299" cy="274" r="14" fill="#d6a54b"/>
+<ellipse cx="300" cy="365" rx="191" ry="14" fill="#416d5b" opacity=".16"/>
+</svg>

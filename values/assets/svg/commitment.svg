@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="commitment-title commitment-desc">
+<title id="commitment-title">Commitment</title>
+<desc id="commitment-desc">Two hands secure a young tree to a steady support, tending what has been chosen over time.</desc>
+<defs>
+ <radialGradient id="commitment-halo"><stop stop-color="#f6e5c1"/><stop offset="1" stop-color="#ead4aa" stop-opacity=".14"/></radialGradient>
+ <linearGradient id="commitment-leaf" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a5b790"/><stop offset="1" stop-color="#4e7059"/></linearGradient>
+ <linearGradient id="commitment-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efcf7c"/><stop offset="1" stop-color="#b87b30"/></linearGradient>
+ <pattern id="commitment-grain" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="#f2d29a" opacity=".42"/></pattern>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/><circle cx="300" cy="199" r="154" fill="url(#commitment-halo)"/>
+<g id="young-tree"><path d="M300 347q-2-130 3-230" fill="none" stroke="#56735c" stroke-width="9" stroke-linecap="round"/><path d="M298 212c-61-7-96-42-99-95 60-1 100 31 108 84-2 6-5 10-9 11ZM305 173c51-10 81-42 81-87-52-3-87 26-95 71 2 8 7 13 14 16Z" fill="url(#commitment-leaf)" stroke="#f5eee5" stroke-width="2"/><path d="M370 110v239" stroke="#765942" stroke-width="10" stroke-linecap="round"/></g>
+<g id="gold-binding"><path d="M286 249q48-24 100 0-46 31-100 0Z" fill="url(#commitment-gold)" stroke="#9b6d36" stroke-width="3"/><path d="M294 249q44-12 84 0" fill="none" stroke="#fff0c9" stroke-width="3"/><path d="M287 249h98v56h-98Z" fill="url(#commitment-grain)" opacity=".22"/></g>
+<g id="tending-hands"><path d="M0 270q113-12 212 18 49 15 88-17" fill="none" stroke="#7895a1" stroke-width="47" stroke-linecap="round"/><path d="M600 270q-113-12-212 18-49 15-88-17" fill="none" stroke="#756787" stroke-width="47" stroke-linecap="round"/><path d="M214 287q49 18 86-16M386 287q-49 18-86-16" fill="none" stroke="#b97d60" stroke-width="18" stroke-linecap="round"/></g>
+<path d="M82 369c87-18 158-16 218 1 66 19 139 17 218-5" fill="none" stroke="#617862" stroke-width="5" stroke-linecap="round" opacity=".32"/>
+</svg>

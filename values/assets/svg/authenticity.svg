@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs>
+  <radialGradient id="halo"><stop stop-color="#f3e8d8"/><stop offset="1" stop-color="#eadfce" stop-opacity=".18"/></radialGradient>
+  <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7694a3"/><stop offset="1" stop-color="#355b69"/></linearGradient>
+  <linearGradient id="violet" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b1a0ba"/><stop offset="1" stop-color="#675a75"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ebc66f"/><stop offset="1" stop-color="#b4782f"/></linearGradient>
+  <linearGradient id="core" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eeae70"/><stop offset="1" stop-color="#c7653f"/></linearGradient>
+  <pattern id="dots" width="13" height="13" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.2" fill="#f7dfa7" opacity=".55"/></pattern>
+</defs>
+<g id="background">
+  <rect width="600" height="420" rx="28" fill="#fbf6ed"/>
+  <circle cx="300" cy="205" r="158" fill="url(#halo)"/>
+</g>
+<g id="layers" stroke="#fff8ef" stroke-width="2" stroke-linejoin="round">
+  <path d="M300 53 456 151l-28 176-181 42L136 224l87-151Z" fill="url(#blue)" opacity=".58"/>
+  <path d="m375 75 96 142-94 139-173-22-65-158 125-98Z" fill="url(#gold)" opacity=".48"/>
+  <path d="m244 92 155 45 42 153-137 83-142-95 21-146Z" fill="url(#violet)" opacity=".62"/>
+  <path d="m300 102 121 103-76 139-158-32-12-151Z" fill="url(#dots)" opacity=".92"/>
+</g>
+<g id="revealed-core">
+  <path d="m300 153 67 48-25 82-84 1-27-81Z" fill="url(#core)" stroke="#fff4e7" stroke-width="3"/>
+  <circle cx="300" cy="221" r="27" fill="#edbb69" opacity=".88"/>
+</g>
+<g id="alignment" fill="none" stroke="#866f78" stroke-width="3" stroke-linecap="round" opacity=".42">
+  <path d="M94 366h412"/><path d="M137 378h326"/>
+</g>
+</svg>

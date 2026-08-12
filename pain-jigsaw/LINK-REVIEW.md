@@ -1,0 +1,123 @@
+# Draft links to confirm before publication
+
+> This is not a complete list of the content work still required. Existing
+> external URLs and video embeds are also drafts and must be reviewed.
+
+The source draft contained the following placeholder links (`href="#"`). They have
+been converted to non-interactive text so patients are not sent to the top of the page.
+The web team should replace each item with an approved destination or remove it.
+
+- **acceptance.html** — Values and goal setting
+- **acceptance.html** — Reflecting on what matters
+- **acceptance.html** — Acceptance techniques
+- **acceptance.html** — Pain Management programmes
+- **acceptance.html** — Talking therapies support
+- **acceptance.html** — Sore? Know More sessions
+- **acceptance.html** — Acceptance strategies
+- **acceptance.html** — Living well with pain
+- **acceptance.html** — Living well with pain
+- **acceptance.html** — Values-based living
+- **acceptance.html** — Acceptance strategies
+- **activity.html** — Pacing guide
+- **activity.html** — Activity planning tools
+- **activity.html** — Self-management resources
+- **activity.html** — Sore? Know More sessions
+- **activity.html** — Pain Management programmes
+- **activity.html** — Pain Toolkit
+- **activity.html** — Planning templates
+- **activity.html** — Daily activity trackers
+- **activity.html** — Pacing
+- **activity.html** — Planning your week
+- **activity.html** — Energy management
+- **communication.html** — Conversation prompts
+- **communication.html** — Explaining pain to others
+- **communication.html** — Preparing for appointments
+- **communication.html** — Pain Management programmes
+- **communication.html** — Sore? Know More sessions
+- **communication.html** — Local support groups
+- **communication.html** — Communication tips
+- **communication.html** — Managing conversations
+- **communication.html** — Building confidence
+- **flare-ups.html** — Create your flare up plan
+- **flare-ups.html** — Tracking symptoms
+- **flare-ups.html** — Pacing tools
+- **flare-ups.html** — Pain Management programmes
+- **flare-ups.html** — Sore? Know More sessions
+- **flare-ups.html** — Relaxation techniques
+- **flare-ups.html** — Managing stress
+- **flare-ups.html** — Sleep support
+- **movement.html** — Home exercise routines
+- **movement.html** — Gentle stretching exercises
+- **movement.html** — Chair-based exercise
+- **movement.html** — Fife Sports & Leisure Trust
+- **movement.html** — Local activity classes
+- **movement.html** — Community exercise groups
+- **movement.html** — Physiotherapy guidance
+- **movement.html** — Pain Management programmes
+- **movement.html** — Self-management strategies
+- **nutrition.html** — Healthy eating advice
+- **nutrition.html** — Balanced diet resources
+- **nutrition.html** — Hydration guidance
+- **nutrition.html** — Wellbeing resources
+- **nutrition.html** — Routine planning
+- **nutrition.html** — Sleep guidance
+- **nutrition.html** — Healthy lifestyle guidance
+- **nutrition.html** — Small habit changes
+- **nutrition.html** — Daily wellbeing tips
+- **nutrition.html** — Healthy living with pain
+- **nutrition.html** — Energy and lifestyle tips
+- **nutrition.html** — Daily wellbeing support
+- **reconnect.html** — Fife voluntary services
+- **reconnect.html** — Pain Association Scotland
+- **reconnect.html** — Community groups in Fife
+- **reconnect.html** — Sore? Know More sessions
+- **reconnect.html** — Pain Management programmes
+- **reconnect.html** — 5 Ways to Wellbeing
+- **reconnect.html** — Self-management resources
+- **reconnect.html** — Mental wellbeing support
+- **relaxation.html** — Breathing exercises
+- **relaxation.html** — Body scan practice
+- **relaxation.html** — Mindfulness techniques
+- **relaxation.html** — Sore? Know More sessions
+- **relaxation.html** — Pain Management programmes
+- **relaxation.html** — Wellbeing services
+- **relaxation.html** — Relaxation exercises
+- **relaxation.html** — Mindfulness techniques
+- **relaxation.html** — Managing stress
+- **relaxation.html** — Relaxation techniques
+- **relaxation.html** — Mindfulness approaches
+- **relaxation.html** — Managing stress
+- **setting-goals.html** — Goal planning sheets
+- **setting-goals.html** — Activity tracking tools
+- **setting-goals.html** — Self-management resources
+- **setting-goals.html** — Pain Management programmes
+- **setting-goals.html** — Sore? Know More sessions
+- **setting-goals.html** — Speak to your healthcare team
+- **setting-goals.html** — Living well with pain
+- **setting-goals.html** — Self-management strategies
+- **setting-goals.html** — Managing setbacks
+- **setting-goals.html** — Setting small goals
+- **setting-goals.html** — Tracking progress
+- **setting-goals.html** — Overcoming setbacks
+- **sleep.html** — Sleep hygiene leaflet (PDF)
+- **sleep.html** — Managing insomnia (PDF)
+- **sleep.html** — Relaxation guidance
+- **sleep.html** — Local wellbeing services
+- **sleep.html** — Your GP practice
+- **sleep.html** — Pain Management resources
+- **sleep.html** — Relaxation audio guidance
+- **sleep.html** — Sleep routines
+- **sleep.html** — Managing night-time anxiety
+- **toolbox.html** — Using heat and cold
+- **toolbox.html** — TENS guidance
+- **toolbox.html** — Pain relief options
+- **toolbox.html** — Pain Management programmes
+- **toolbox.html** — Talking therapies support
+- **toolbox.html** — Sore? Know More sessions
+- **toolbox.html** — Pain Toolkit
+- **toolbox.html** — Daily management tips
+- **toolbox.html** — Tracking what works
+- **toolbox.html** — Pain relief tools
+- **toolbox.html** — Daily coping strategies
+- **toolbox.html** — Managing symptoms
+- **understand.html** — Pain Management Programme

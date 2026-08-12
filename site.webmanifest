@@ -1,0 +1,14 @@
+{
+  "name": "Pain Jigsaw — Vision Demo",
+  "short_name": "Pain Jigsaw",
+  "description": "Understand your pain. Discover what matters. Find your way forward.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#edf2f3",
+  "theme_color": "#126f79",
+  "icons": [
+    { "src": "pain-jigsaw/assets/app-icons/app-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "pain-jigsaw/assets/app-icons/app-icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
