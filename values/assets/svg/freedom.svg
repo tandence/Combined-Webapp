@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs>
+ <linearGradient id="fr-sky" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#d9e6e3"/><stop offset=".62" stop-color="#edf0e7"/><stop offset="1" stop-color="#f3dca5"/></linearGradient>
+ <linearGradient id="fr-flight" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#bd6e51"/><stop offset="1" stop-color="#dfaa54"/></linearGradient>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/>
+<circle cx="305" cy="196" r="157" fill="url(#fr-sky)"/>
+<path d="M104 338V145c0-43 35-78 78-78h118v53H186c-16 0-29 13-29 29v189Z" fill="#55715f"/>
+<path d="M157 338V158c0-21 17-38 38-38h105v43h-83c-10 0-17 8-17 18v157Z" fill="#91a68e"/>
+<path d="M200 338V181c0-10 7-18 17-18h83v175Z" fill="#f4ead8"/>
+<g fill="url(#fr-flight)" stroke="#965b4b" stroke-width="4" stroke-linejoin="round">
+ <path d="M285 205c52-55 111-76 177-64-39 17-70 43-91 80-28-15-57-20-86-16Z"/>
+ <path d="M337 222c69-23 127-10 174 39-49-11-93-6-133 16-10-24-23-42-41-55Z"/>
+</g>
+<path d="M278 213c52 1 91 23 116 65" fill="none" stroke="#d7a64d" stroke-width="9" stroke-linecap="round"/>
+<path d="M302 103v135" stroke="#d8c7a7" stroke-width="7" stroke-dasharray="2 14" stroke-linecap="round"/>
+<g fill="#d8a64d"><circle cx="477" cy="89" r="5"/><circle cx="520" cy="126" r="3"/><circle cx="438" cy="70" r="3"/></g>
+</svg>

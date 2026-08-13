@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="purpose-title purpose-desc">
+<title id="purpose-title">Purpose</title>
+<desc id="purpose-desc">A quiet path chooses its way through layered hills toward a small golden point of direction.</desc>
+<defs>
+ <linearGradient id="purpose-sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f4e5cf"/><stop offset="1" stop-color="#fff9ef"/></linearGradient>
+ <linearGradient id="purpose-hill-a" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#acba9a"/><stop offset="1" stop-color="#70886d"/></linearGradient>
+ <linearGradient id="purpose-hill-b" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#8fa581"/><stop offset="1" stop-color="#55725c"/></linearGradient>
+ <linearGradient id="purpose-path" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f1d789"/><stop offset="1" stop-color="#b98d56"/></linearGradient>
+ <linearGradient id="purpose-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efd07b"/><stop offset="1" stop-color="#b9792d"/></linearGradient>
+</defs>
+<rect width="600" height="420" rx="28" fill="url(#purpose-sky)"/>
+<g id="layered-landscape"><path d="M0 254q96-91 203-31 84-112 175-21 85-60 222 47v171H0Z" fill="url(#purpose-hill-a)"/><path d="M0 314q119-65 242-17 120 48 217-9 65-38 141 10v122H0Z" fill="url(#purpose-hill-b)" opacity=".88"/><path d="M246 420q16-94 39-144 17-37 13-84 46 65 62 121 15 52 19 107Z" fill="url(#purpose-path)"/></g>
+<g id="north-star"><circle cx="301" cy="110" r="19" fill="url(#purpose-gold)"/><path d="M301 72v76M263 110h76" stroke="#d39d40" stroke-width="3" stroke-linecap="round"/><path d="M275 84l52 52M327 84l-52 52" stroke="#d39d40" stroke-width="2" stroke-linecap="round" opacity=".64"/></g>
+<g id="direction-lines" fill="none" stroke="#e4c57a" stroke-width="3" stroke-linecap="round" opacity=".54"><path d="M302 162q-34 42-31 84M304 162q36 38 42 80"/></g>
+<path d="M78 377c87-18 159-16 222 2 67 19 141 16 222-6" fill="none" stroke="#56725d" stroke-width="5" stroke-linecap="round" opacity=".34"/>
+</svg>

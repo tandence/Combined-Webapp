@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="nature-title nature-desc">
+<title id="nature-title">Nature</title>
+<desc id="nature-desc">Layered woodland leaves open around a quiet, sunlit path, suggesting calm and restoration in nature.</desc>
+<defs>
+ <linearGradient id="nature-sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e2ece7"/><stop offset="1" stop-color="#fbf4e8"/></linearGradient>
+ <radialGradient id="nature-light"><stop stop-color="#f4d884"/><stop offset="1" stop-color="#ead5a3" stop-opacity=".08"/></radialGradient>
+ <linearGradient id="nature-leaf-a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a6b795"/><stop offset="1" stop-color="#54735f"/></linearGradient>
+ <linearGradient id="nature-leaf-b" x1="1" y1="0" x2="0" y2="1"><stop stop-color="#789586"/><stop offset="1" stop-color="#355f50"/></linearGradient>
+ <linearGradient id="nature-path" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f1da9b"/><stop offset="1" stop-color="#b69464"/></linearGradient>
+</defs>
+<rect width="600" height="420" rx="28" fill="url(#nature-sky)"/><circle cx="300" cy="187" r="151" fill="url(#nature-light)"/>
+<g id="woodland-canopy" stroke="#f5eee5" stroke-width="2" stroke-linejoin="round"><path d="M279 71C190 30 105 54 47 139c83 34 160 13 236-48 2-8 1-14-4-20Z" fill="url(#nature-leaf-a)"/><path d="M321 71c89-41 174-17 232 68-83 34-160 13-236-48-2-8-1-14 4-20Z" fill="url(#nature-leaf-b)"/><path d="M239 188C139 154 67 188 29 277c94 22 169-12 221-76-1-6-5-11-11-13Z" fill="url(#nature-leaf-b)"/><path d="M361 188c100-34 172 0 210 89-94 22-169-12-221-76 1-6 5-11 11-13Z" fill="url(#nature-leaf-a)"/></g>
+<g id="leaf-veins" fill="none" stroke="#dfe8df" stroke-width="2" stroke-linecap="round" opacity=".74"><path d="M62 137q116-35 211-55M538 137q-116-35-211-55M48 267q104-41 188-69M552 267q-104-41-188-69"/></g>
+<g id="quiet-path"><path d="M227 420q1-77 47-131 28-34 27-100 56 95 72 231Z" fill="url(#nature-path)"/><path d="M0 334q135-49 250-8 98 36 350-10v104H0Z" fill="#8fa783" opacity=".84"/><path d="M227 420q1-77 47-131 28-34 27-100 56 95 72 231Z" fill="url(#nature-path)"/><circle cx="301" cy="122" r="17" fill="#d9a84d"/></g>
+<path d="M87 374c83-18 153-16 213 1 66 18 137 16 213-5" fill="none" stroke="#51715d" stroke-width="5" stroke-linecap="round" opacity=".34"/>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="expression-title expression-desc">
+<title id="expression-title">Self-expression</title>
+<desc id="expression-desc">An adult plays a small guitar quietly, absorbed in a private moment of self-expression.</desc>
+<defs>
+ <radialGradient id="expression-halo"><stop stop-color="#f6e3bf"/><stop offset="1" stop-color="#ead3aa" stop-opacity=".15"/></radialGradient>
+ <linearGradient id="expression-violet" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#aa9abb"/><stop offset="1" stop-color="#685a77"/></linearGradient>
+ <linearGradient id="expression-wood" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dfa65d"/><stop offset=".56" stop-color="#b86f38"/><stop offset="1" stop-color="#784a30"/></linearGradient>
+ <pattern id="expression-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="#f4d39a" opacity=".44"/></pattern>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/><circle cx="300" cy="202" r="154" fill="url(#expression-halo)"/>
+<g id="musician"><circle cx="276" cy="139" r="42" fill="#c38967"/><path d="M235 140c0-47 20-70 50-67 29 4 41 28 32 66-16-8-30-20-42-35-11 17-24 29-40 36Z" fill="#5a433d"/><path d="M180 345q9-130 97-158 87 29 95 158Z" fill="url(#expression-violet)" stroke="#f6eee5" stroke-width="2"/><path d="M234 245q-29 43-43 92M320 242q35 34 70 60" fill="none" stroke="#c38967" stroke-width="16" stroke-linecap="round"/></g>
+<g id="small-guitar"><ellipse cx="339" cy="293" rx="53" ry="44" fill="url(#expression-wood)" stroke="#774a30" stroke-width="4" transform="rotate(-8 339 293)"/><circle cx="339" cy="293" r="14" fill="#63402d"/><path d="M381 273 472 230l10 20-96 47Z" fill="url(#expression-wood)" stroke="#774a30" stroke-width="4" stroke-linejoin="round"/><path d="m471 230 28-7 9 19-26 8Z" fill="#74482f"/><path d="M336 285 483 239M337 292l148-47M338 299l150-48" stroke="#f4dfba" stroke-width="2"/><path d="M271 282q34 21 69 13M380 268q31-10 55-13" fill="none" stroke="#c38967" stroke-width="14" stroke-linecap="round"/><path d="M298 251q64 7 102 54l-41 24q-35-38-83-47Z" fill="url(#expression-dots)" opacity=".34"/></g>
+<g id="music" fill="none" stroke="#bd6e49" stroke-width="4" stroke-linecap="round"><path d="M414 151v34q-17-2-17 10 1 12 17 4"/><path d="M454 116v38q-18-2-18 11 2 12 18 3l23-7v-40Z"/></g>
+<path d="M85 372c90-19 160-17 215 0 63 20 135 17 215-5" fill="none" stroke="#897562" stroke-width="5" stroke-linecap="round" opacity=".3"/>
+</svg>

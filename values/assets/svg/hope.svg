@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs>
+ <linearGradient id="ho-ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#695f64"/><stop offset="1" stop-color="#3f5257"/></linearGradient>
+ <radialGradient id="ho-dawn"><stop stop-color="#f5d887"/><stop offset="1" stop-color="#f4e8d1" stop-opacity=".12"/></radialGradient>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/>
+<circle cx="300" cy="183" r="156" fill="url(#ho-dawn)"/>
+<path d="M55 251c104-39 181-31 247 10 68-40 147-47 243-9v115H55Z" fill="url(#ho-ground)"/>
+<path d="M302 315c1-72 4-115 9-151" fill="none" stroke="#56745b" stroke-width="11" stroke-linecap="round"/>
+<path d="M309 205c-58-8-88-38-94-87 54-3 91 24 99 74Z" fill="#7f9d77" stroke="#4c6b55" stroke-width="4"/>
+<path d="M311 171c44-28 88-27 128 2-35 30-76 38-124 13Z" fill="#9bae84" stroke="#55735d" stroke-width="4"/>
+<circle cx="307" cy="102" r="37" fill="#edc96f"/>
+<g stroke="#edc96f" stroke-width="5" stroke-linecap="round" opacity=".7"><path d="M307 48V25M268 63l-17-17M346 63l17-17M255 102h-24M359 102h24"/></g>
+</svg>

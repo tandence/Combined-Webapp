@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="growth-title growth-desc">
+<title id="growth-title">Growth</title>
+<desc id="growth-desc">A gardener's hands tip a watering can toward three young shoots emerging from carefully tended soil.</desc>
+<defs>
+ <radialGradient id="growth-halo"><stop stop-color="#f5e5c3"/><stop offset="1" stop-color="#ead6ad" stop-opacity=".16"/></radialGradient>
+ <linearGradient id="growth-leaf" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a8b991"/><stop offset="1" stop-color="#4f7059"/></linearGradient>
+ <linearGradient id="growth-can" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9ab1b5"/><stop offset="1" stop-color="#53767c"/></linearGradient>
+ <linearGradient id="growth-earth" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#bd8c68"/><stop offset="1" stop-color="#805b45"/></linearGradient>
+ <pattern id="growth-grain" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.2" fill="#edcf9d" opacity=".38"/></pattern>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/><circle cx="300" cy="196" r="153" fill="url(#growth-halo)"/>
+<g id="earth"><path d="M42 304q128-44 259-7 126 36 257-6v129H42Z" fill="url(#growth-earth)"/><path d="M42 305q128-44 259-7 126 36 257-6v128H42Z" fill="url(#growth-grain)"/><path d="M66 350q111-27 230-4 121 24 239-5" fill="none" stroke="#6f503e" stroke-width="4" opacity=".42"/></g>
+<g id="young-shoots" stroke="#f5eee5" stroke-width="2" stroke-linejoin="round"><g transform="translate(128)"><path d="M0 322v-91" stroke="#51715a" stroke-width="7" stroke-linecap="round"/><path d="M-3 275c-40-3-63-28-62-65 41-4 68 17 75 54-2 6-6 10-13 11ZM5 252c36-6 58-29 58-62-38-2-63 20-69 52 2 6 5 9 11 10Z" fill="url(#growth-leaf)"/></g><g transform="translate(264 24) scale(.78)"><path d="M0 322v-91" stroke="#51715a" stroke-width="7" stroke-linecap="round"/><path d="M-3 275c-40-3-63-28-62-65 41-4 68 17 75 54-2 6-6 10-13 11ZM5 252c36-6 58-29 58-62-38-2-63 20-69 52 2 6 5 9 11 10Z" fill="url(#growth-leaf)"/></g></g>
+<g id="watering-can"><path d="M352 155h104v86H352Z" fill="url(#growth-can)" stroke="#486970" stroke-width="4"/><path d="M453 177q89 3 98 39l-93 13M365 154q-15-52 32-63 44-7 58 58" fill="none" stroke="#486970" stroke-width="9" stroke-linecap="round"/><path d="M550 220q-11 39-35 72M568 224q-8 40-29 76" fill="none" stroke="#77a2ab" stroke-width="5" stroke-linecap="round" stroke-dasharray="5 11"/></g>
+<g id="hands"><path d="M600 95q-77 5-131 62" fill="none" stroke="#756787" stroke-width="42" stroke-linecap="round"/><path d="M475 154q-28 15-43 32" fill="none" stroke="#b9795d" stroke-width="17" stroke-linecap="round"/><circle cx="426" cy="191" r="12" fill="#b9795d"/></g>
+<path d="M87 385c84-14 150-12 213 3 67 16 138 14 213-5" fill="none" stroke="#6d5747" stroke-width="5" stroke-linecap="round" opacity=".3"/>
+</svg>

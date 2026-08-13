@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="kindness-title kindness-desc">
+<title id="kindness-title">Kindness</title>
+<desc id="kindness-desc">One adult gently offers a warm cup into another person's waiting hands.</desc>
+<defs>
+ <radialGradient id="kindness-halo"><stop stop-color="#f7e5bf"/><stop offset="1" stop-color="#ead3a8" stop-opacity=".14"/></radialGradient>
+ <linearGradient id="kindness-cup" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f0cf7b"/><stop offset="1" stop-color="#b97d31"/></linearGradient>
+ <linearGradient id="kindness-green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#98ad92"/><stop offset="1" stop-color="#506f59"/></linearGradient>
+ <pattern id="kindness-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="#fff2d1" opacity=".5"/></pattern>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/><circle cx="300" cy="198" r="154" fill="url(#kindness-halo)"/>
+<g id="warm-cup"><path d="M242 154h116l-13 124q-45 24-90 0Z" fill="url(#kindness-cup)" stroke="#8d653b" stroke-width="4"/><path d="M357 177q70-5 59 55-9 38-65 28" fill="none" stroke="#8d653b" stroke-width="12"/><path d="M266 137q-18-25 2-48M302 137q18-28-1-53M336 137q-17-24 2-45" fill="none" stroke="#b9aa95" stroke-width="4" stroke-linecap="round"/><path d="M250 165h100v75q-43 25-90 3Z" fill="url(#kindness-dots)" opacity=".35"/></g>
+<g id="offering-hands"><path d="M0 245q111-12 210 41 39 21 73 17" fill="none" stroke="#7893a0" stroke-width="47" stroke-linecap="round"/><path d="M208 287q43 32 88 16" fill="none" stroke="#a96f55" stroke-width="18" stroke-linecap="round"/><circle cx="297" cy="302" r="12" fill="#a96f55"/><path d="M600 246q-111-13-210 40-41 22-76 17" fill="none" stroke="url(#kindness-green)" stroke-width="47" stroke-linecap="round"/><path d="M392 287q-43 32-89 16" fill="none" stroke="#ce9673" stroke-width="18" stroke-linecap="round"/><circle cx="302" cy="302" r="12" fill="#ce9673"/></g>
+<path d="M92 359c82-17 150-15 208 2 64 18 133 16 208-5" fill="none" stroke="#718372" stroke-width="5" stroke-linecap="round" opacity=".32"/>
+</svg>

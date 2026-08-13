@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="love-title love-desc">
+<title id="love-title">Love</title>
+<desc id="love-desc">Two pairs of hands cradle a shared, glowing centre held within overlapping forms.</desc>
+<defs>
+ <radialGradient id="love-halo"><stop stop-color="#f6e5c1"/><stop offset="1" stop-color="#ead4aa" stop-opacity=".14"/></radialGradient>
+ <linearGradient id="love-blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7895a5"/><stop offset="1" stop-color="#355d6b"/></linearGradient>
+ <linearGradient id="love-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efcf7d"/><stop offset="1" stop-color="#b97a30"/></linearGradient>
+ <pattern id="love-dots" width="13" height="13" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.2" fill="#f7d89b" opacity=".55"/></pattern>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/><circle cx="300" cy="200" r="154" fill="url(#love-halo)"/>
+<g id="held-centre"><circle cx="247" cy="196" r="112" fill="url(#love-blue)" opacity=".93"/><circle cx="353" cy="196" r="112" fill="url(#love-gold)" opacity=".88"/><path d="M300 100a112 112 0 0 0 0 192 112 112 0 0 0 0-192Z" fill="#4d6470" opacity=".7"/><path d="M300 100a112 112 0 0 0 0 192 112 112 0 0 0 0-192Z" fill="url(#love-dots)"/><circle cx="300" cy="196" r="27" fill="#f2d17e"/></g>
+<g id="cradling-hands"><path d="M67 329q84-17 153-67 39-28 79-31" fill="none" stroke="#9e6751" stroke-width="21" stroke-linecap="round"/><path d="M533 329q-84-17-153-67-39-28-79-31" fill="none" stroke="#cf9774" stroke-width="21" stroke-linecap="round"/><path d="M84 349q111-1 216-75 105 74 216 75" fill="none" stroke="#f4e6d4" stroke-width="5" stroke-linecap="round"/></g>
+<path d="M93 374c83-15 150-13 207 2 63 17 132 15 207-5" fill="none" stroke="#5f7d84" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs><linearGradient id="p-soil" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#957054"/><stop offset="1" stop-color="#674f43"/></linearGradient></defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/>
+<circle cx="300" cy="196" r="156" fill="#edf0e8"/>
+<path d="M56 279c114-34 204-30 272 4 70-30 143-29 216 2v82H56Z" fill="url(#p-soil)"/>
+<path d="M300 301c0-99 1-156 2-171" fill="none" stroke="#55735d" stroke-width="11" stroke-linecap="round"/>
+<path d="M302 225c-57-3-89-27-102-70 50-10 87 9 105 58Z" fill="#91a889" stroke="#55735d" stroke-width="4"/>
+<path d="M303 184c47-7 80-31 98-73-47-2-83 19-101 61Z" fill="#75927a" stroke="#4c6f59" stroke-width="4"/>
+<path d="M301 299c-30 13-47 34-52 62M302 299c31 9 52 30 62 62M301 302v60" fill="none" stroke="#d0aa70" stroke-width="6" stroke-linecap="round"/>
+<g transform="translate(118 92)" fill="#d7a64e"><circle r="24"/><g stroke="#d7a64e" stroke-width="5" stroke-linecap="round"><path d="M0-40v-15M0 40v15M-40 0h-15M40 0h15M-29-29l-11-11M29 29l11 11"/></g></g>
+<path d="M430 92q25-24 50 0-25 25-50 0Z" fill="#d7dedb" stroke="#829993" stroke-width="4"/>
+</svg>

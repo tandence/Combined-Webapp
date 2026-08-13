@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="joy-title joy-desc">
+<title id="joy-title">Joy</title>
+<desc id="joy-desc">An adult lifts their arms into warm light as flowing shapes open around them in an unguarded moment of joy.</desc>
+<defs>
+ <radialGradient id="joy-halo"><stop stop-color="#f8e4af"/><stop offset="1" stop-color="#ecd2a0" stop-opacity=".1"/></radialGradient>
+ <linearGradient id="joy-violet" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a899b9"/><stop offset="1" stop-color="#655775"/></linearGradient>
+ <linearGradient id="joy-blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#89a5b2"/><stop offset="1" stop-color="#4c7282"/></linearGradient>
+ <linearGradient id="joy-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1d17c"/><stop offset="1" stop-color="#bd7e30"/></linearGradient>
+ <pattern id="joy-dots" width="13" height="13" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.2" fill="#fff0c9" opacity=".58"/></pattern>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/><circle cx="300" cy="198" r="154" fill="url(#joy-halo)"/>
+<g id="opening-colour" fill="none" stroke-linecap="round"><path d="M92 270C149 170 225 139 294 245" stroke="url(#joy-blue)" stroke-width="28" opacity=".78"/><path d="M508 270C451 170 375 139 306 245" stroke="url(#joy-gold)" stroke-width="28" opacity=".78"/><path d="M124 286C175 205 232 183 281 245" stroke="#d8e3df" stroke-width="5" opacity=".72"/><path d="M476 286C425 205 368 183 319 245" stroke="#f2dfb2" stroke-width="5" opacity=".8"/></g>
+<g id="joyful-person"><circle cx="300" cy="177" r="40" fill="#b77a5d"/><path d="M261 178c0-44 19-67 48-63 27 3 38 27 30 62-15-8-28-19-39-33-10 16-23 27-39 34Z" fill="#4b3e3d"/><path d="M220 343c7-102 34-148 80-148s73 47 80 148Z" fill="url(#joy-violet)" stroke="#f6eee5" stroke-width="2"/><path d="M263 233q-54-32-89-89M337 233q54-32 89-89" fill="none" stroke="#b77a5d" stroke-width="16" stroke-linecap="round"/><path d="M288 189q12 11 25 0" fill="none" stroke="#f8e4d7" stroke-width="3" stroke-linecap="round"/></g>
+<g id="light"><circle cx="300" cy="71" r="25" fill="url(#joy-gold)"/><g stroke="#d6a348" stroke-width="3" stroke-linecap="round" opacity=".7"><path d="M300 31V17M300 125v-14M260 71h-14M354 71h-14M272 43l-10-10M338 109l-10-10M328 43l10-10"/></g></g>
+<path d="M83 371c88-18 159-16 217 1 65 19 137 17 217-5" fill="none" stroke="#887563" stroke-width="5" stroke-linecap="round" opacity=".3"/>
+</svg>

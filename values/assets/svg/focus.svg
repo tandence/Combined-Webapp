@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="focus-title focus-desc">
+<title id="focus-title">Focus</title>
+<desc id="focus-desc">An adult reads attentively at a quiet desk, with tea nearby and a phone deliberately set aside.</desc>
+<defs>
+ <radialGradient id="focus-halo"><stop stop-color="#f5e5c3"/><stop offset="1" stop-color="#ead5ad" stop-opacity=".16"/></radialGradient>
+ <linearGradient id="focus-green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#91a88e"/><stop offset="1" stop-color="#4f705d"/></linearGradient>
+ <linearGradient id="focus-paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffaf1"/><stop offset="1" stop-color="#e4d2b5"/></linearGradient>
+ <pattern id="focus-lines" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M2 12h12" stroke="#baa98e" stroke-width="1" opacity=".42"/></pattern>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/><circle cx="300" cy="198" r="154" fill="url(#focus-halo)"/>
+<g id="reader" stroke="#f6eee5" stroke-width="2" stroke-linejoin="round"><circle cx="300" cy="142" r="39" fill="#9d6751"/><path d="M262 143c0-43 18-65 46-62 27 3 38 26 30 61-15-8-27-18-38-32-10 15-23 26-38 33Z" fill="#403a3b"/><path d="M219 304c7-91 34-133 81-133s74 43 81 133Z" fill="url(#focus-green)"/><path d="M261 228q-28 34-43 75M339 228q28 34 43 75" fill="none" stroke="#9d6751" stroke-width="14" stroke-linecap="round"/></g>
+<g id="book"><path d="M180 269q65-25 120 8 55-33 120-8l-11 51q-56-20-109 12-53-32-109-12Z" fill="url(#focus-paper)" stroke="#746756" stroke-width="4"/><path d="M300 278v53" stroke="#b9a78b" stroke-width="3"/><path d="M190 275q57-18 110 10 52-28 110-10v38q-55-15-110 15-55-30-110-15Z" fill="url(#focus-lines)" opacity=".45"/></g>
+<g id="desk"><path d="M61 321h478v34H61Z" fill="#9d704e"/><path d="M92 353l-11 34M508 353l11 34" stroke="#6e4d3a" stroke-width="11" stroke-linecap="round"/><path d="M119 289h36l-4 31h-27Z" fill="#f2e6d1" stroke="#907042" stroke-width="3"/><path d="M155 296q19-2 10 15-6 5-12 1M137 279q-8-10 0-19" fill="none" stroke="#907042" stroke-width="3" stroke-linecap="round"/><rect x="447" y="294" width="48" height="25" rx="5" fill="#4d5559" transform="rotate(-7 471 307)"/></g>
+<path d="M103 379c83-13 149-11 197 2 59 16 125 14 197-4" fill="none" stroke="#7e7262" stroke-width="5" stroke-linecap="round" opacity=".28"/>
+</svg>

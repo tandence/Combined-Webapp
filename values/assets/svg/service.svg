@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs><radialGradient id="halo"><stop stop-color="#f8e5bd"/><stop offset="1" stop-color="#e7d2aa" stop-opacity=".2"/></radialGradient><linearGradient id="leaf" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6e927d"/><stop offset="1" stop-color="#2f5f50"/></linearGradient></defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/>
+<circle cx="300" cy="188" r="145" fill="url(#halo)"/>
+<circle cx="300" cy="58" r="20" fill="#d8a44a"/>
+<g fill="url(#leaf)" stroke="#f4eee4" stroke-width="2">
+ <path d="M300 330C250 265 250 188 300 108c50 80 50 157 0 222Z"/>
+ <path d="M292 330C205 284 166 224 170 143c75 26 118 88 122 187Z"/>
+ <path d="M308 330c87-46 126-106 122-187-75 26-118 88-122 187Z"/>
+ <path d="M270 334C177 330 112 292 84 224c82-8 148 29 186 110Z"/>
+ <path d="M330 334c93-4 158-42 186-110-82-8-148 29-186 110Z"/>
+</g>
+<g fill="none" stroke="#dfe9e2" stroke-width="2" opacity=".8"><path d="M300 315V132"/><path d="M273 314 187 166"/><path d="m327 314 86-148"/><path d="m250 329-134-87"/><path d="m350 329 134-87"/></g>
+<ellipse cx="300" cy="351" rx="220" ry="18" fill="#416d5b" opacity=".18"/>
+</svg>

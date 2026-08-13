@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+<defs><linearGradient id="h-flow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#557887"/><stop offset="1" stop-color="#779788"/></linearGradient></defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/>
+<circle cx="300" cy="198" r="155" fill="#e7ece7"/>
+<g fill="none" stroke-linecap="round">
+ <path d="M121 211c42-85 93-96 151-20s108 62 167-25c17-24 33-39 48-44" stroke="#d5c4a6" stroke-width="52"/>
+ <path d="M121 211c42-85 93-96 151-20s108 62 167-25c17-24 33-39 48-44" stroke="url(#h-flow)" stroke-width="25"/>
+ <path d="M95 264h83l24-58 38 117 39-154 37 95h68l22-43 24 43h77" stroke="#c87858" stroke-width="9" stroke-linejoin="round"/>
+</g>
+<g fill="#e0af57" stroke="#9b6d34" stroke-width="3">
+ <circle cx="121" cy="211" r="15"/><circle cx="272" cy="191" r="15"/><circle cx="439" cy="166" r="15"/>
+</g>
+<path d="M300 78c30-34 83 2 55 39l-55 55-55-55c-28-37 25-73 55-39Z" fill="#c9765a" opacity=".9"/>
+</svg>

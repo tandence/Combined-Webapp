@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="justice-title justice-desc">
+<title id="justice-title">Justice</title>
+<desc id="justice-desc">Two human hands steady an evenly balanced beam beneath a warm point of light.</desc>
+<defs>
+ <radialGradient id="justice-halo"><stop stop-color="#f6e4bd"/><stop offset="1" stop-color="#ead3a8" stop-opacity=".14"/></radialGradient>
+ <linearGradient id="justice-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efce79"/><stop offset="1" stop-color="#b5792e"/></linearGradient>
+ <linearGradient id="justice-blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7c99a5"/><stop offset="1" stop-color="#3d6270"/></linearGradient>
+</defs>
+<rect width="600" height="420" rx="28" fill="#fbf6ed"/><circle cx="300" cy="198" r="154" fill="url(#justice-halo)"/>
+<g id="balanced-scale" fill="none" stroke="#7d5b39" stroke-linecap="round" stroke-linejoin="round"><path d="M300 111v190" stroke-width="10"/><path d="M126 164h348" stroke-width="9"/><path d="m145 164-43 112M455 164l43 112" stroke-width="5"/><path d="M55 276q47 38 94 0 47 38 94 0Z" fill="url(#justice-blue)" stroke-width="4"/><path d="M357 276q47 38 94 0 47 38 94 0Z" fill="url(#justice-blue)" stroke-width="4"/><circle cx="300" cy="163" r="22" fill="url(#justice-gold)" stroke-width="4"/><path d="m300 301-56 61h112Z" fill="url(#justice-gold)" stroke-width="4"/></g>
+<g id="steadying-hands"><path d="M0 327q111-19 216 13 42 13 84-1" fill="none" stroke="#7894a0" stroke-width="46" stroke-linecap="round"/><path d="M600 327q-111-19-216 13-42 13-84-1" fill="none" stroke="#8fa48a" stroke-width="46" stroke-linecap="round"/><path d="M219 339q42 17 81 0M381 339q-42 17-81 0" fill="none" stroke="#b97d60" stroke-width="18" stroke-linecap="round"/></g>
+<circle cx="300" cy="74" r="16" fill="url(#justice-gold)"/>
+</svg>
