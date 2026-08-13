@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="What Matters Most — discover the values that guide you and bring them into everyday life.">
+  <meta name="theme-color" content="#151a1d">
+  <title>What Matters Most</title>
+  <link rel="stylesheet" href="styles/main.css?v=4.0.0">
+  <link rel="stylesheet" href="../shared/journey-bridge.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the experience</a>
+  <div class="paper-grain" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#/welcome" data-link aria-label="What Matters Most home">
+      <img class="compass-mark" src="assets/svg/compass-rose.svg" alt="">
+      <span><strong>What Matters Most</strong><small>Reflect · Choose · Act</small></span>
+    </a>
+    <button class="quiet-button resume-button" id="resumeButton" type="button" hidden>Return to my place</button>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <div id="app"></div>
+  </main>
+
+  <footer class="site-footer">
+    <p>Take your time. There is no perfect answer.</p>
+    <button class="text-button" id="startAgainButton" type="button">Start again</button>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="data/values-45.js?v=2.1.0"></script>
+  <script src="data/value-copy-45-v1.js?v=2.1.0"></script>
+  <script src="data/jigsaw-connections-45.js?v=2.1.0"></script>
+  <script src="../shared/journey-bridge.js"></script>
+  <script src="scripts/app.js?v=5.0.0"></script>
+</body>
+</html>
