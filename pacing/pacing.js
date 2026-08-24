@@ -27,6 +27,11 @@ const exampleRows = () => [
 const freshState = () => ({ capacity: 12, activities: [], meaningfulActivity: "", recoveryChoice: "", lowerVersion: "", pattern: "boom" });
 let state = load();
 
+document.querySelectorAll(".capacity-token-set").forEach(set => {
+  const units = Number(set.dataset.units) || 0;
+  set.innerHTML = Array.from({length:units},() => '<i aria-hidden="true"></i>').join("");
+});
+
 function load() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");

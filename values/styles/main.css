@@ -554,6 +554,7 @@ h2 {
 .sort-choice[data-pile="important"]::before { content: "✦"; }
 .sort-choice[data-pile="unsure"] { --choice-accent:#8a7657; --wash-a:#c8bcaa; --wash-b:#e0d8cc; }
 .sort-choice[data-pile="unsure"]::before { content: "○"; }
+.sort-choice[data-pile="unsure"] strong { max-width: 170px; font-size: 1.28rem; }
 .sort-choice:hover { border-color: var(--choice-accent); background: #fffaf1; box-shadow: 0 20px 43px rgba(0,0,0,.32); }
 .sort-choice strong { max-width: 130px; font-size: 1.55rem; line-height: 1.05; }
 .sort-choice small { max-width: 145px; margin-top: auto; color: #565b58; font-size: .72rem; }

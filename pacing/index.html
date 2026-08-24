@@ -9,7 +9,7 @@
   <link rel="icon" href="../pain-jigsaw/assets/app-icons/favicon.ico" sizes="any">
   <link rel="stylesheet" href="../shared/journey-bridge.css">
   <link rel="stylesheet" href="pacing.css">
-  <link rel="stylesheet" href="pacing-enhancements.css?v=2">
+  <link rel="stylesheet" href="pacing-enhancements.css?v=4">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to the pacing plan</a>
@@ -29,11 +29,11 @@
       <section class="pace-step is-active" data-step="capacity" aria-labelledby="capacityHeading">
         <div class="step-copy"><p class="step-number">Step 1</p><h2 id="capacityHeading">How much energy feels available today?</h2><p>Choose the closest estimate. This is a personal planning guide—not a measurement of your health or a prediction of symptoms.</p></div>
         <fieldset class="capacity-field"><legend class="sr-only">Capacity available today</legend><div class="capacity-options">
-          <label><input type="radio" name="capacity" value="4"><span><i aria-hidden="true">●○○○○</i><strong>Very limited</strong><b>4 energy units</b><small>Keep plans especially light</small></span></label>
-          <label><input type="radio" name="capacity" value="8"><span><i aria-hidden="true">●●○○○</i><strong>Lower</strong><b>8 energy units</b><small>Adapt amounts and protect pauses</small></span></label>
-          <label><input type="radio" name="capacity" value="12" checked><span><i aria-hidden="true">●●●○○</i><strong>Some</strong><b>12 energy units</b><small>Balance activity and recovery</small></span></label>
-          <label><input type="radio" name="capacity" value="16"><span><i aria-hidden="true">●●●●○</i><strong>More</strong><b>16 energy units</b><small>Leave some flexibility</small></span></label>
-          <label><input type="radio" name="capacity" value="22"><span><i aria-hidden="true">●●●●●</i><strong>Plenty</strong><b>22 energy units</b><small>Enough to represent a busy day</small></span></label>
+          <label><input type="radio" name="capacity" value="4"><span><strong>Very limited</strong><span class="capacity-token-set" data-units="4" role="img" aria-label="4 energy units available"></span><small>Keep plans especially light</small></span></label>
+          <label><input type="radio" name="capacity" value="8"><span><strong>Lower</strong><span class="capacity-token-set" data-units="8" role="img" aria-label="8 energy units available"></span><small>Adapt amounts and protect pauses</small></span></label>
+          <label><input type="radio" name="capacity" value="12" checked><span><strong>Some</strong><span class="capacity-token-set" data-units="12" role="img" aria-label="12 energy units available"></span><small>Balance activity and recovery</small></span></label>
+          <label><input type="radio" name="capacity" value="16"><span><strong>More</strong><span class="capacity-token-set" data-units="16" role="img" aria-label="16 energy units available"></span><small>Leave some flexibility</small></span></label>
+          <label><input type="radio" name="capacity" value="22"><span><strong>Plenty</strong><span class="capacity-token-set" data-units="22" role="img" aria-label="22 energy units available"></span><small>Enough to represent a busy day</small></span></label>
         </div>
         <div class="custom-capacity">
           <input type="radio" id="capacityCustomChoice" name="capacity" value="custom">
@@ -53,6 +53,7 @@
           <div class="activity-palette" aria-label="Activities to add">
             <button type="button" data-add-activity="personal-care"><span aria-hidden="true">◆</span><strong>Personal care</strong><small>Necessary</small></button>
             <button type="button" data-add-activity="meal"><span aria-hidden="true">◆</span><strong>Prepare a meal</strong><small>Necessary</small></button>
+            <button type="button" data-add-activity="household"><span aria-hidden="true">◆</span><strong>Household task</strong><small>Necessary</small></button>
             <button type="button" data-add-activity="connection"><span aria-hidden="true">●</span><strong>Time with someone</strong><small>Meaningful</small></button>
             <button type="button" data-add-activity="outside"><span aria-hidden="true">●</span><strong>Time outside</strong><small>Meaningful</small></button>
             <button type="button" data-add-activity="movement"><span aria-hidden="true">●</span><strong>Comfortable movement</strong><small>Meaningful</small></button>
@@ -100,6 +101,6 @@
     <div class="pace-reset"><button type="button" class="start-again-button" id="startPacingAgain">Start again</button><small>Clear this pacing draft and begin with a fresh day.</small></div>
   </main>
   <script src="../shared/journey-bridge.js"></script>
-  <script src="pacing.js?v=2"></script>
+  <script src="pacing.js?v=3"></script>
 </body>
 </html>
