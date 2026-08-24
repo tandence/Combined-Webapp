@@ -197,42 +197,58 @@ document.querySelectorAll("[data-next]").forEach(button => button.addEventListen
 }));
 document.querySelectorAll("[data-back]").forEach(button => button.addEventListener("click", () => showStep(button.dataset.back)));
 
-const patternCopy = {
-  boom: { kicker:"All-at-once pattern", title:"A better spell becomes a cue to keep going", description:"Activities cluster together and leave less room for recovery later." },
-  steady: { kicker:"Steadier experiment", title:"Activity, pauses and flexible versions", description:"The same priorities are spread out, adapted and given recovery space." }
-};
-function chartData(pattern) {
+function comparisonTotals(rows, adapted) {
+  const consuming = rows.filter(row => !isRestorative(row)).reduce((sum,row) => sum + rowEnergy(row,adapted),0);
+  const restorative = rows.filter(isRestorative).reduce((sum,row) => sum + rowEnergy(row,adapted),0);
+  const restored = Math.min(restorative,consuming);
+  const used = Math.max(0,consuming-restored);
+  return { consuming,restorative,restored,used,remaining:state.capacity-used };
+}
+function comparisonTokens(totals) {
+  const usedWithin = Math.min(state.capacity,totals.used);
+  const over = Math.min(10,Math.max(0,totals.used-state.capacity));
+  const label = totals.remaining >= 0 ? `${totals.remaining} of ${state.capacity} energy units remain available` : `${Math.abs(totals.remaining)} energy units beyond today’s estimate`;
+  return `<div class="compare-token-strip" role="img" aria-label="${label}">${Array.from({length:state.capacity},(_,index) => `<i class="${index < usedWithin ? "is-used" : "is-available"}"></i>`).join("")}${Array.from({length:over},() => '<i class="is-over"></i>').join("")}</div>`;
+}
+function comparisonActivity(row,adapted) {
+  const restorative = isRestorative(row);
+  const energy = rowEnergy(row,adapted);
+  const amount = adapted ? row.version === "smaller" ? "Smaller amount" : row.version === "minimum" ? "Minimum amount" : "Usual amount" : "Usual amount";
+  return `<div class="compare-activity is-${restorative ? "restorative" : activityType(row)}"><span class="compare-activity__symbol" aria-hidden="true">${restorative ? "○" : activityType(row) === "necessary" ? "◆" : "●"}</span><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${restorative ? "Restorative" : amount}</small></div><b aria-label="${restorative ? "adds" : "uses"} ${energy} energy units">${restorative ? "+" : "−"}${energy}</b></div>`;
+}
+function recoverySpace(row) {
+  if (isRestorative(row) || row.recovery === "none") return "";
+  return `<div class="compare-recovery"><span aria-hidden="true">◇</span><small>${row.recovery === "long" ? "Longer recovery space" : "Short pause"}</small></div>`;
+}
+function comparisonTimeBlock(title,rows,adapted,showRecovery) {
+  return `<section class="compare-time${rows.length ? "" : " is-empty"}"><header><span aria-hidden="true">${title === "Morning" ? "☼" : title === "Evening" ? "☾" : "◐"}</span><strong>${title}</strong></header><div>${rows.length ? rows.map(row => comparisonActivity(row,adapted) + (showRecovery ? recoverySpace(row) : "")).join("") : '<small>Room left open</small>'}</div></section>`;
+}
+function comparisonOutcome(totals,kind) {
+  const result = totals.remaining > 0 ? `${totals.remaining} left available` : totals.remaining === 0 ? "No flexibility left" : `${Math.abs(totals.remaining)} beyond the estimate`;
+  const math = `${totals.consuming} used${totals.restored ? ` − ${totals.restored} restored` : ""} = ${totals.used} net`;
+  return `${comparisonTokens(totals)}<div><strong>${result}</strong><small>${math}. ${kind === "all" ? "Clustering activity leaves less room if the day changes." : "This plan keeps the chosen priorities visible while making room to respond."}</small></div>`;
+}
+function changeCard(icon,title,copy) { return `<article><span aria-hidden="true">${icon}</span><div><strong>${title}</strong><small>${copy}</small></div></article>`; }
+function renderComparison() {
   const rows = state.activities.filter(row => row.activity);
-  const capacityY = 55;
-  const unitDrop = 135 / Math.max(4,state.capacity);
-  let currentY = capacityY;
-  const points = [{x:30,y:currentY}];
-  const events = [];
-  if (pattern === "boom") {
-    rows.forEach((row,index) => { const x = 150 + index * Math.min(145,560 / Math.max(1,rows.length)); currentY += (isRestorative(row) ? -1 : 1) * rowEnergy(row) * unitDrop; currentY=Math.max(capacityY,Math.min(270,currentY)); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:isRestorative(row) ? "recovery" : "activity"}); });
-    currentY = Math.min(280,currentY + 30); points.push({x:690,y:currentY}); points.push({x:870,y:Math.max(150,currentY - 15)});
-  } else {
-    rows.forEach((row,index) => { const x = 120 + index * Math.min(180,620 / Math.max(1,rows.length)); currentY += (isRestorative(row) ? -1 : 1) * rowEnergy(row,true) * unitDrop; currentY=Math.max(capacityY,Math.min(245,currentY)); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:isRestorative(row) ? "recovery" : "activity"}); if (!isRestorative(row) && row.recovery !== "none") { const pauseX=x+60; points.push({x:pauseX,y:currentY}); events.push({x:pauseX,y:currentY,label:row.recovery === "long" ? "Longer recovery space" : "Short pause",kind:"recovery"}); } });
-    points.push({x:870,y:currentY});
-  }
-  return { points,events,end:points.at(-1) };
+  const allTotals = comparisonTotals(rows,false);
+  const pacedTotals = comparisonTotals(rows,true);
+  document.querySelector("#allAtOnceBoard").innerHTML = comparisonTimeBlock("Morning",rows,false,false);
+  document.querySelector("#pacedBoard").innerHTML = timingOptions.map(([timing,title]) => comparisonTimeBlock(title,rows.filter(row => row.timing === timing),true,true)).join("");
+  document.querySelector("#allAtOnceOutcome").innerHTML = comparisonOutcome(allTotals,"all");
+  document.querySelector("#pacedOutcome").innerHTML = comparisonOutcome(pacedTotals,"paced");
+  const resized = rows.filter(row => !isRestorative(row) && row.version !== "full").length;
+  const periods = new Set(rows.map(row => row.timing)).size;
+  const restorative = rows.filter(isRestorative).length;
+  const pauses = rows.filter(row => !isRestorative(row) && row.recovery !== "none").length;
+  const flexibility = pacedTotals.remaining > 0 ? `${pacedTotals.remaining} energy ${pacedTotals.remaining === 1 ? "unit" : "units"} remain available.` : pacedTotals.remaining === 0 ? "The plan uses today’s full estimate." : `The plan remains ${Math.abs(pacedTotals.remaining)} ${Math.abs(pacedTotals.remaining) === 1 ? "unit" : "units"} beyond today’s estimate.`;
+  document.querySelector("#comparisonChanges").innerHTML = [
+    changeCard("↔",periods > 1 ? `Spread across ${periods} parts of the day` : "Kept in one part of the day",periods > 1 ? "The activities are no longer all clustered together." : "Moving one activity could create more space."),
+    changeCard("↘",resized ? `${resized} ${resized === 1 ? "activity has" : "activities have"} a smaller amount` : "Usual amounts are still selected",resized ? "The priority remains, with a more flexible version." : "A smaller or minimum amount remains available to try."),
+    changeCard("＋",`${restorative} restorative ${restorative === 1 ? "activity" : "activities"} and ${pauses} planned ${pauses === 1 ? "pause" : "pauses"}`,"Restorative activities add planning energy; pauses protect space."),
+    changeCard("●",flexibility,"This is a planning illustration, not a prediction of symptoms.")
+  ].join("");
 }
-function pathFrom(points) { return points.map((point,index) => `${index ? "L" : "M"}${point.x} ${point.y}`).join(" "); }
-function renderComparison(pattern = "boom") {
-  state.pattern = pattern; save();
-  document.querySelectorAll("[data-pattern]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.pattern === pattern)));
-  const copy = patternCopy[pattern];
-  document.querySelector("#journeyKicker").textContent = copy.kicker; document.querySelector("#journeyTitle").textContent = copy.title; document.querySelector("#journeyDescription").textContent = copy.description;
-  const data = chartData(pattern); const d = pathFrom(data.points);
-  document.querySelector("#energyPath").setAttribute("d",d); document.querySelector("#energyShadow").setAttribute("d",d);
-  document.querySelector("#energyEnd").setAttribute("cx",data.end.x); document.querySelector("#energyEnd").setAttribute("cy",data.end.y);
-  document.querySelector("#energyJourney").dataset.pattern = pattern;
-  document.querySelector("#journeyEvents").innerHTML = data.events.map(event => `<span class="journey-event is-${event.kind}" style="--event-x:${event.x / 9}%;--event-y:${event.y / 3}%"><i></i><b>${escapeHtml(event.label)}</b></span>`).join("");
-  const { consuming, restored, used, remaining } = energyTotals();
-  const allocation = `${consuming} consuming${restored ? ` − ${restored} restored` : ""} = ${used} net energy units used`;
-  document.querySelector("#journeyOutcome").innerHTML = pattern === "boom" ? `<strong>Less room later</strong><p>${allocation}. Clustering energy-consuming activity can still leave less opportunity to respond if the day changes.</p>` : `<strong>${remaining > 0 ? `${remaining} energy ${remaining === 1 ? "unit" : "units"} left available` : remaining === 0 ? "No energy left available" : `${Math.abs(remaining)} units above today’s estimate`}</strong><p>${allocation}. Adapted amounts, restorative activity and recovery spaces create a clearer stopping point.</p>`;
-}
-document.querySelectorAll("[data-pattern]").forEach(button => button.addEventListener("click", () => renderComparison(button.dataset.pattern)));
 
 function renderPlan() {
   document.querySelector("#planList").innerHTML = state.activities.filter(row => row.activity).map(row => `<article class="plan-row"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${isRestorative(row) ? "+" : "−"}${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"} · ${row.timing} · ${isRestorative(row) ? "restorative" : `${row.effort === "medium" ? "moderate" : row.effort} effort`} · ${row.recovery === "none" ? "no planned pause" : row.recovery + " recovery"}</small></div><select data-version="${row.id}" aria-label="Amount today for ${escapeHtml(rowLabel(row))}">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"],["move","Move to another day"],["help","Ask for help"]],row.version)}</select></article>`).join("");
