@@ -337,13 +337,12 @@ function pageSort() {
   const chapterPosition = (sortedCount % SORT_CHAPTER_SIZE) + 1;
   return `<section class="page sort-layout${sortEntryPending ? " sort-entering" : ""}">
     <div class="sort-card-wrap">${cardMarkup(value, { compact: true, showFlipHint: !state.flipHintSeen })}</div>
-    <div class="sort-copy"><p class="eyebrow">Sort the deck</p><h1>What place does <em>${value.title}</em> have in your life?</h1>
-      <p class="sort-status">${remaining === 1 ? "This is the final card." : `Card ${chapterPosition} in this small group. ${remaining} values remaining to explore.`} Choose the option that feels most true today.</p>
+    <div class="sort-copy"><div class="sort-intro"><p class="eyebrow">Sort the deck</p><h1>What place does <em>${value.title}</em> have in your life?</h1>
+      <p class="sort-status">${remaining === 1 ? "This is the final card." : `Card ${chapterPosition} in this small group. ${remaining} values remaining to explore.`} Choose the option that feels most true today.</p></div>
       <div class="sort-choices" role="group" aria-label="Place ${value.title} into a group">
         <button class="sort-choice" data-pile="essential"><kbd>1</kbd><strong>Essential</strong><small>A value I need to feel true to myself.</small></button>
         <button class="sort-choice" data-pile="important"><kbd>2</kbd><strong>Important</strong><small>Meaningful, though not central right now.</small></button>
         <button class="sort-choice" data-pile="unsure"><kbd>3</kbd><strong>Unsure</strong><small>I want more time to notice this.</small></button>
-        <button class="sort-choice" data-pile="notImportant"><kbd>4</kbd><strong>Not important right now</strong><small>Not part of this season of my life.</small></button>
       </div>
       ${Object.values(state.piles).flat().length ? `<button class="text-button" style="margin-top:22px" data-undo-sort>Undo the last choice</button>` : ""}
     </div></section>`;
@@ -971,7 +970,7 @@ document.addEventListener("click", event => {
 
 document.addEventListener("keydown", event => {
   if (routeFromHash() !== "sort" || event.target.matches("input, textarea, select")) return;
-  const pile = { "1": "essential", "2": "important", "3": "unsure", "4": "notImportant" }[event.key];
+  const pile = { "1": "essential", "2": "important", "3": "unsure" }[event.key];
   if (pile) sortCurrent(pile);
 });
 

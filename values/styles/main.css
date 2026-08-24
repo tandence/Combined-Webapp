@@ -529,7 +529,7 @@ h2 {
 .sort-copy { padding-top: 12px; }
 .sort-copy h1 { max-width: 900px; font-size: clamp(2.7rem, 5.2vw, 5rem); }
 .sort-copy h1 em { color: #e3bd72; font-style: normal; }
-.sort-choices { grid-template-columns: repeat(4, minmax(135px,1fr)); gap: 11px; }
+.sort-choices { grid-template-columns: repeat(3, minmax(170px,1fr)); gap: 11px; }
 .sort-choice {
   position: relative;
   min-height: 310px;
@@ -554,8 +554,6 @@ h2 {
 .sort-choice[data-pile="important"]::before { content: "✦"; }
 .sort-choice[data-pile="unsure"] { --choice-accent:#8a7657; --wash-a:#c8bcaa; --wash-b:#e0d8cc; }
 .sort-choice[data-pile="unsure"]::before { content: "○"; }
-.sort-choice[data-pile="notImportant"] { --choice-accent:#5f6465; --wash-a:#9ea2a1; --wash-b:#cbc9c4; }
-.sort-choice[data-pile="notImportant"]::before { content: "×"; }
 .sort-choice:hover { border-color: var(--choice-accent); background: #fffaf1; box-shadow: 0 20px 43px rgba(0,0,0,.32); }
 .sort-choice strong { max-width: 130px; font-size: 1.55rem; line-height: 1.05; }
 .sort-choice small { max-width: 145px; margin-top: auto; color: #565b58; font-size: .72rem; }
@@ -604,6 +602,11 @@ h2 {
 
 @media (max-width: 620px) {
   .site-header { background: rgba(14,18,20,.95); }
+  .sort-layout .sort-copy { display:contents; }
+  .sort-layout .sort-intro { order:1; }
+  .sort-layout .sort-card-wrap { order:2; }
+  .sort-layout .sort-choices { order:3; }
+  .sort-layout .sort-copy > .text-button { order:4; justify-self:start; }
   .page, .deck-page { width: min(100% - 20px, 1520px); }
   .welcome-art { min-height: 355px; }
   .orbit { width: 250px; transform: translate(-52px,-8px); }
@@ -791,7 +794,7 @@ h2 {
 .sort-card-wrap .jigsaw-connection strong { font-size: clamp(.78rem, .72vw, .9rem); }
 .sort-card-wrap .jigsaw-connection span { font-size: clamp(.75rem, .68vw, .86rem); }
 
-/* The four sorting choices now scale with their generous card size. */
+/* The three sorting choices scale with their generous card size. */
 .sort-choice::before {
   top: 22px;
   font-size: clamp(2.7rem, 3vw, 3.35rem);
