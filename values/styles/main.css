@@ -607,6 +607,7 @@ h2 {
   .sort-layout .sort-card-wrap { order:2; }
   .sort-layout .sort-choices { order:3; }
   .sort-layout .sort-copy > .text-button { order:4; justify-self:start; }
+  .sort-choices .sort-choice[data-pile="unsure"] { grid-column:1 / -1; width:calc(50% - 4px); justify-self:center; }
   .page, .deck-page { width: min(100% - 20px, 1520px); }
   .welcome-art { min-height: 355px; }
   .orbit { width: 250px; transform: translate(-52px,-8px); }

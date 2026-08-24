@@ -295,6 +295,12 @@
 
 @media (max-width: 760px) {
   .landing-piece { width: calc(var(--w) * .94); }
+  .landing-piece.is-selected {
+    --lift: -4px;
+    z-index: 20;
+    transform: translate(-50%, -50%) rotate(var(--r)) translateY(var(--lift)) scale(1.65);
+    filter: drop-shadow(0 10px 9px rgba(20, 66, 99, .3));
+  }
 }
 
 .landing-piece:focus-visible {

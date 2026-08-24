@@ -10,13 +10,14 @@
 
 .mobile-library-hint{display:none}
 @media(max-width:760px){
-  .builder-panel--library{max-height:min(480px,54vh);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:.7rem;scrollbar-width:auto;scrollbar-color:#547985 #e6eef0}
+  .builder-panel--library{display:flex;flex-direction:column;max-height:min(480px,54vh);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:.7rem;scrollbar-width:auto;scrollbar-color:#547985 #e6eef0}
   .builder-panel--library::-webkit-scrollbar{width:12px}
   .builder-panel--library::-webkit-scrollbar-track{background:#e6eef0;border-radius:10px}
   .builder-panel--library::-webkit-scrollbar-thumb{background:#547985;border:3px solid #e6eef0;border-radius:10px}
   .builder-panel--library .panel-heading{position:sticky;top:-1rem;z-index:3;margin:-1rem -.1rem 0;padding:1rem .1rem .65rem;background:#fff;border-bottom:1px solid #e3e9eb}
   .mobile-library-hint{display:block;margin:.35rem 0 .65rem;color:#35636c;font-size:.8rem;font-weight:700}
-  .piece-library{margin-top:.65rem}
+  .builder-panel--library .piece-library{order:1;margin-top:.65rem}
+  .builder-panel--library .custom-piece-disclosure{order:2;flex:0 0 auto;margin-top:.9rem}
   .library-piece{min-height:64px;padding:.35rem .4rem}
   .library-piece__thumb{width:50px;height:45px}
 }
