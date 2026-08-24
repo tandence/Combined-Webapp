@@ -9,7 +9,7 @@
   <link rel="icon" href="../pain-jigsaw/assets/app-icons/favicon.ico" sizes="any">
   <link rel="stylesheet" href="../shared/journey-bridge.css">
   <link rel="stylesheet" href="pacing.css">
-  <link rel="stylesheet" href="pacing-enhancements.css">
+  <link rel="stylesheet" href="pacing-enhancements.css?v=2">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to the pacing plan</a>
@@ -34,12 +34,19 @@
           <label><input type="radio" name="capacity" value="12" checked><span><i aria-hidden="true">●●●○○</i><strong>Some</strong><b>12 energy units</b><small>Balance activity and recovery</small></span></label>
           <label><input type="radio" name="capacity" value="16"><span><i aria-hidden="true">●●●●○</i><strong>More</strong><b>16 energy units</b><small>Leave some flexibility</small></span></label>
           <label><input type="radio" name="capacity" value="22"><span><i aria-hidden="true">●●●●●</i><strong>Plenty</strong><b>22 energy units</b><small>Enough to represent a busy day</small></span></label>
+        </div>
+        <div class="custom-capacity">
+          <input type="radio" id="capacityCustomChoice" name="capacity" value="custom">
+          <label for="capacityCustomChoice"><strong>Choose my own estimate</strong><small>Use a number that makes more sense for you today.</small></label>
+          <label class="sr-only" for="customCapacity">Custom energy units available today</label>
+          <input id="customCapacity" type="number" min="1" max="40" step="1" inputmode="numeric" value="12" aria-describedby="customCapacityUnit">
+          <span id="customCapacityUnit">energy units</span>
         </div></fieldset>
         <div class="step-actions"><a href="../pain-jigsaw/activity.html?return=pacing" class="secondary-button">Review activity learning</a><button type="button" class="primary-button" data-next="activities">Choose today’s activities</button></div>
       </section>
 
       <section class="pace-step" data-step="activities" aria-labelledby="activitiesHeading" hidden>
-        <div class="step-copy"><p class="step-number">Step 2</p><h2 id="activitiesHeading">What needs and deserves space today?</h2><p>Mix necessary, meaningful and restorative activity. Each estimate comes from the effort and amount you choose.</p></div>
+        <div class="step-copy"><p class="step-number">Step 2</p><h2 id="activitiesHeading">What needs and deserves space today?</h2><p>Mix necessary, meaningful and restorative activity. Energy-consuming activities use units; restorative activities can add units back, up to today’s starting estimate.</p></div>
         <div class="goal-prompt"><label for="meaningfulActivity">One activity that would make today feel worthwhile</label><input id="meaningfulActivity" name="meaningfulActivity" placeholder="For example, spend time in the garden"></div>
         <section class="activity-planner" aria-labelledby="activityPlannerHeading">
           <div class="day-builder-heading"><div><p class="card-kicker">Your day board</p><h3 id="activityPlannerHeading">Place what matters into today</h3><p>Choose a tile. Then open a placed card only when you want to change its energy, amount or position.</p></div><div class="energy-tray" id="energyTray" aria-live="polite"></div></div>
@@ -51,7 +58,7 @@
             <button type="button" data-add-activity="movement"><span aria-hidden="true">●</span><strong>Comfortable movement</strong><small>Meaningful</small></button>
             <button type="button" data-add-activity="pause"><span aria-hidden="true">○</span><strong>Quiet pause</strong><small>Restorative</small></button>
             <button type="button" data-add-activity="relax"><span aria-hidden="true">○</span><strong>Relaxation</strong><small>Restorative</small></button>
-            <button type="button" data-add-activity="custom"><span aria-hidden="true">＋</span><strong>Something else</strong><small>My own</small></button>
+            <button type="button" data-add-activity="custom"><span aria-hidden="true">＋</span><strong>Something else</strong><small>Consuming or restorative</small></button>
           </div>
           <div class="day-board" id="activityRows" aria-label="Activities placed into today"></div>
           <div class="energy-summary" id="energySummary" role="status" aria-live="polite"></div>
@@ -93,6 +100,6 @@
     <div class="pace-reset"><button type="button" class="start-again-button" id="startPacingAgain">Start again</button><small>Clear this pacing draft and begin with a fresh day.</small></div>
   </main>
   <script src="../shared/journey-bridge.js"></script>
-  <script src="pacing.js"></script>
+  <script src="pacing.js?v=2"></script>
 </body>
 </html>

@@ -16,6 +16,7 @@ const activityOptions = [
 ];
 const labels = Object.fromEntries(activityOptions);
 const effortPoints = { light: 2, medium: 4, high: 6 };
+const restorativePoints = { light: 1, medium: 2, high: 3 };
 const versionFactors = { full: 1, smaller: .67, minimum: .33 };
 const makeId = () => globalThis.crypto?.randomUUID?.() || `activity-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const exampleRows = () => [
@@ -36,10 +37,19 @@ function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
 function escapeHtml(value = "") { return String(value).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[c])); }
 function handoff() { try { return JSON.parse(sessionStorage.getItem(HANDOFF_KEY) || "null"); } catch { return null; } }
 function rowLabel(row) { return row.activity === "custom" ? row.custom.trim() || "My activity" : labels[row.activity] || "Activity"; }
+function isRestorative(row) { return ["pause","relax"].includes(row.activity) || (row.activity === "custom" && row.nature === "restorative"); }
 function rowEnergy(row, adapted = true) {
-  const effort = effortPoints[row.effort] || 1;
+  const effort = (isRestorative(row) ? restorativePoints : effortPoints)[row.effort] || 1;
   const factor = adapted ? versionFactors[row.version] || 1 : 1;
   return Math.max(1, Math.round(effort * factor));
+}
+function energyTotals() {
+  const rows = state.activities.filter(row => row.activity);
+  const consuming = rows.filter(row => !isRestorative(row)).reduce((sum,row) => sum + rowEnergy(row),0);
+  const restorative = rows.filter(isRestorative).reduce((sum,row) => sum + rowEnergy(row),0);
+  const restored = Math.min(restorative, consuming);
+  const used = Math.max(0, consuming - restored);
+  return { consuming, restorative, restored, used, remaining: state.capacity - used };
 }
 function optionMarkup(options, current) { return options.map(([value,label]) => `<option value="${value}" ${value === current ? "selected" : ""}>${label}</option>`).join(""); }
 
@@ -77,19 +87,19 @@ function renderRowsLegacy() {
   renderEnergySummary();
 }
 function renderEnergySummary() {
-  const total = state.activities.filter(row => row.activity).reduce((sum,row) => sum + rowEnergy(row),0);
-  const difference = state.capacity - total;
+  const { consuming, restorative, restored, used, remaining } = energyTotals();
   const summary = document.querySelector("#energySummary");
   if (!summary) return;
-  const detail = difference > 0
-    ? `${difference} ${difference === 1 ? "unit is" : "units are"} left unallocated, giving the day more flexibility.`
-    : difference === 0
+  const detail = remaining > 0
+    ? `${remaining} ${remaining === 1 ? "unit is" : "units are"} left available, giving the day more flexibility.`
+    : remaining === 0
       ? "The estimate uses all the energy you selected, leaving no flexibility for change."
-      : `This is ${Math.abs(difference)} ${Math.abs(difference) === 1 ? "unit" : "units"} above today’s estimate. Try a smaller amount, reduce an effort estimate or move something.`;
-  summary.className = `energy-summary ${difference < 0 ? "is-over" : difference === 0 ? "is-full" : "is-within"}`;
-  summary.innerHTML = `<strong>${total} of ${state.capacity} energy units allocated</strong><span>${detail}</span>`;
+      : `This is ${Math.abs(remaining)} ${Math.abs(remaining) === 1 ? "unit" : "units"} above today’s estimate. Try a smaller amount, reduce an effort estimate or move something.`;
+  const restorativeText = restorative ? ` − ${restored} restored` : "";
+  summary.className = `energy-summary ${remaining < 0 ? "is-over" : remaining === 0 ? "is-full" : "is-within"}`;
+  summary.innerHTML = `<strong>${used} of ${state.capacity} net energy units used</strong><span>${detail}</span><span class="energy-summary__math">${consuming} consuming${restorativeText} = ${used} net used. Restorative estimates cannot take the display above today’s starting energy.</span>`;
   const tray = document.querySelector("#energyTray");
-  if (tray) tray.innerHTML = `<strong>Energy today</strong><div class="energy-token-line" aria-label="${Math.max(0,difference)} of ${state.capacity} energy units unallocated">${Array.from({length:state.capacity},(_,index) => `<i class="${index < total ? "is-placed" : ""}"></i>`).join("")}</div><small>${Math.max(0,difference)} unallocated</small>`;
+  if (tray) tray.innerHTML = `<strong>Energy today</strong><div class="energy-token-line" aria-label="${Math.max(0,remaining)} of ${state.capacity} energy units available">${Array.from({length:state.capacity},(_,index) => `<i class="${index < used ? "is-placed" : ""}"></i>`).join("")}</div><small>${Math.max(0,remaining)} available${restored ? ` · ${restored} restored` : ""}</small>`;
 }
 function updateRow(event) {
   const article = event.target.closest("[data-row]");
@@ -100,20 +110,26 @@ function updateRow(event) {
   if (wasOpen) rowsHost.querySelector(`[data-row="${row.id}"] details`)?.setAttribute("open", "");
 }
 const timingOptions = [["morning","Morning"],["midday","Midday"],["afternoon","Later"],["evening","Evening"]];
-const activityType = activity => ["personal-care","meal","household","appointment"].includes(activity) ? "necessary" : ["pause","relax"].includes(activity) ? "restorative" : activity === "custom" ? "personal" : "meaningful";
+const activityType = row => ["personal-care","meal","household","appointment"].includes(row.activity) ? "necessary" : isRestorative(row) ? "restorative" : row.activity === "custom" ? "personal" : "meaningful";
 const energyDots = count => Array.from({length:count},() => "<i></i>").join("");
 function renderRows() {
   rowsHost.innerHTML = timingOptions.map(([timing,title]) => {
-    const cards = state.activities.filter(row => row.activity && row.timing === timing).map(row => `<article class="day-card-tile is-${activityType(row.activity)}" data-row="${row.id}">
-      <div class="day-card-tile__face"><span class="tile-symbol" aria-hidden="true">${activityType(row.activity) === "necessary" ? "◆" : activityType(row.activity) === "restorative" ? "○" : activityType(row.activity) === "personal" ? "+" : "●"}</span><div><small>${activityType(row.activity)}</small><strong>${escapeHtml(rowLabel(row))}</strong></div><div class="tile-energy" aria-label="${rowEnergy(row)} energy units">${energyDots(rowEnergy(row))}</div></div>
+    const cards = state.activities.filter(row => row.activity && row.timing === timing).map(row => {
+      const type = activityType(row);
+      const restorative = isRestorative(row);
+      const effortOptions = restorative ? [["light","A little · +1"],["medium","Some · +2"],["high","More · +3"]] : [["light","Light · 2"],["medium","Moderate · 4"],["high","Higher · 6"]];
+      return `<article class="day-card-tile is-${type}" data-row="${row.id}">
+      <div class="day-card-tile__face"><span class="tile-symbol" aria-hidden="true">${type === "necessary" ? "◆" : type === "restorative" ? "○" : type === "personal" ? "+" : "●"}</span><div><small>${type === "personal" ? "energy-consuming · my own" : type}</small><strong>${escapeHtml(rowLabel(row))}</strong></div><div class="tile-energy" aria-label="${restorative ? "Adds" : "Uses"} ${rowEnergy(row)} energy units">${energyDots(rowEnergy(row))}</div></div>
       <details><summary>Adjust card</summary><div class="tile-controls">
         <label class="custom-name" ${row.activity === "custom" ? "" : "hidden"}>Name it<input data-field="custom" value="${escapeHtml(row.custom)}" placeholder="Name this activity"></label>
-        <label>Effort<select data-field="effort">${optionMarkup([["light","Light · 2"],["medium","Moderate · 4"],["high","Higher · 6"]],row.effort)}</select></label>
+        <label class="custom-nature" ${row.activity === "custom" ? "" : "hidden"}>Energy effect<select data-field="nature">${optionMarkup([["consuming","Uses energy"],["restorative","Restorative · adds energy"]],row.nature || "consuming")}</select></label>
+        <label>${restorative ? "Restorative effect" : "Effort"}<select data-field="effort">${optionMarkup(effortOptions,row.effort)}</select></label>
         <label>Amount<select data-field="version">${optionMarkup([["full","Usual"],["smaller","Smaller"],["minimum","Minimum"]],row.version)}</select></label>
         <label>Recovery<select data-field="recovery">${optionMarkup([["none","No planned pause"],["short","Short pause"],["long","Longer recovery"]],row.recovery)}</select></label>
         <div class="tile-moves"><button type="button" data-move="earlier">Earlier</button><button type="button" data-move="later">Later</button><button type="button" data-remove-row>Remove</button></div>
       </div></details>
-    </article>`).join("");
+    </article>`;
+    }).join("");
     return `<section class="day-zone" data-zone="${timing}"><header><span aria-hidden="true">${timing === "morning" ? "☼" : timing === "midday" ? "◒" : timing === "afternoon" ? "◐" : "☾"}</span><h4>${title}</h4></header><div class="day-zone__cards">${cards || `<p class="empty-zone">Room left open</p>`}</div></section>`;
   }).join("");
   rowsHost.querySelectorAll("select,input").forEach(control => control.addEventListener("change", updateRow));
@@ -124,12 +140,35 @@ function renderRows() {
 }
 document.querySelectorAll("[data-add-activity]").forEach(button => button.addEventListener("click", () => {
   const activity = button.dataset.addActivity;
-  state.activities.push({ id:makeId(), activity, custom:"", effort:activityType(activity) === "restorative" ? "light" : "medium", version:"full", timing:"afternoon", recovery:activityType(activity) === "restorative" ? "none" : "short" }); save(); renderRows();
-  rowsHost.querySelector(`[data-row="${state.activities.at(-1).id}"]`)?.scrollIntoView({behavior:"smooth",block:"center"});
+  const restorative = ["pause","relax"].includes(activity);
+  state.activities.push({ id:makeId(), activity, custom:"", nature:"consuming", effort:"medium", version:"full", timing:"afternoon", recovery:restorative ? "none" : "short" }); save(); renderRows();
+  const addedCard = rowsHost.querySelector(`[data-row="${state.activities.at(-1).id}"]`);
+  if (activity === "custom") addedCard?.querySelector("details")?.setAttribute("open", "");
+  addedCard?.scrollIntoView({behavior:"smooth",block:"center"});
 }));
 renderRows();
 
-document.querySelectorAll('[name="capacity"]').forEach(input => { input.checked = Number(input.value) === state.capacity; input.addEventListener("change", () => { state.capacity = Number(input.value); save(); renderEnergySummary(); }); });
+const presetCapacities = [4,8,12,16,22];
+const customCapacityInput = document.querySelector("#customCapacity");
+const customCapacityChoice = document.querySelector("#capacityCustomChoice");
+function syncCapacityControls() {
+  const isPreset = presetCapacities.includes(state.capacity);
+  document.querySelectorAll('[name="capacity"]').forEach(input => { input.checked = input.value === "custom" ? !isPreset : Number(input.value) === state.capacity; });
+  customCapacityInput.value = state.capacity;
+}
+document.querySelectorAll('[name="capacity"]').forEach(input => input.addEventListener("change", () => {
+  const next = input.value === "custom" ? Number(customCapacityInput.value) : Number(input.value);
+  state.capacity = Math.min(40,Math.max(1,Number.isFinite(next) ? next : 12));
+  save(); renderEnergySummary();
+}));
+customCapacityInput.addEventListener("input", () => {
+  const next = Number(customCapacityInput.value);
+  if (!Number.isFinite(next) || next < 1) return;
+  customCapacityChoice.checked = true;
+  state.capacity = Math.min(40,Math.round(next));
+  save(); renderEnergySummary();
+});
+syncCapacityControls();
 document.querySelector("#meaningfulActivity").value = state.meaningfulActivity;
 document.querySelector("#recoveryChoice").value = state.recoveryChoice;
 document.querySelector("#lowerVersion").value = state.lowerVersion;
@@ -165,10 +204,10 @@ function chartData(pattern) {
   const points = [{x:30,y:currentY}];
   const events = [];
   if (pattern === "boom") {
-    rows.forEach((row,index) => { const x = 150 + index * Math.min(145,560 / Math.max(1,rows.length)); currentY += rowEnergy(row) * unitDrop; currentY=Math.min(270,currentY); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:"activity"}); });
+    rows.forEach((row,index) => { const x = 150 + index * Math.min(145,560 / Math.max(1,rows.length)); currentY += (isRestorative(row) ? -1 : 1) * rowEnergy(row) * unitDrop; currentY=Math.max(capacityY,Math.min(270,currentY)); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:isRestorative(row) ? "recovery" : "activity"}); });
     currentY = Math.min(280,currentY + 30); points.push({x:690,y:currentY}); points.push({x:870,y:Math.max(150,currentY - 15)});
   } else {
-    rows.forEach((row,index) => { const x = 120 + index * Math.min(180,620 / Math.max(1,rows.length)); currentY += rowEnergy(row,true) * unitDrop; currentY=Math.min(245,currentY); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:"activity"}); if (row.recovery !== "none") { const pauseX=x+60; points.push({x:pauseX,y:currentY}); events.push({x:pauseX,y:currentY,label:row.recovery === "long" ? "Longer recovery space" : "Short pause",kind:"recovery"}); } });
+    rows.forEach((row,index) => { const x = 120 + index * Math.min(180,620 / Math.max(1,rows.length)); currentY += (isRestorative(row) ? -1 : 1) * rowEnergy(row,true) * unitDrop; currentY=Math.max(capacityY,Math.min(245,currentY)); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:isRestorative(row) ? "recovery" : "activity"}); if (!isRestorative(row) && row.recovery !== "none") { const pauseX=x+60; points.push({x:pauseX,y:currentY}); events.push({x:pauseX,y:currentY,label:row.recovery === "long" ? "Longer recovery space" : "Short pause",kind:"recovery"}); } });
     points.push({x:870,y:currentY});
   }
   return { points,events,end:points.at(-1) };
@@ -184,15 +223,14 @@ function renderComparison(pattern = "boom") {
   document.querySelector("#energyEnd").setAttribute("cx",data.end.x); document.querySelector("#energyEnd").setAttribute("cy",data.end.y);
   document.querySelector("#energyJourney").dataset.pattern = pattern;
   document.querySelector("#journeyEvents").innerHTML = data.events.map(event => `<span class="journey-event is-${event.kind}" style="--event-x:${event.x / 9}%;--event-y:${event.y / 3}%"><i></i><b>${escapeHtml(event.label)}</b></span>`).join("");
-  const total = state.activities.filter(row => row.activity).reduce((sum,row) => sum + rowEnergy(row),0);
-  const reserve = state.capacity-total;
-  const allocation = `${Math.round(total)} of ${state.capacity} energy units allocated`;
-  document.querySelector("#journeyOutcome").innerHTML = pattern === "boom" ? `<strong>Less room later</strong><p>${allocation}. Clustering activity can leave less opportunity to respond if the day changes.</p>` : `<strong>${reserve > 0 ? `${reserve} energy ${reserve === 1 ? "unit" : "units"} left unallocated` : reserve === 0 ? "No energy left unallocated" : `${Math.abs(reserve)} units above today’s estimate`}</strong><p>${allocation}. Adapted amounts and recovery spaces create a clearer stopping point; pauses are not treated as restoring energy.</p>`;
+  const { consuming, restored, used, remaining } = energyTotals();
+  const allocation = `${consuming} consuming${restored ? ` − ${restored} restored` : ""} = ${used} net energy units used`;
+  document.querySelector("#journeyOutcome").innerHTML = pattern === "boom" ? `<strong>Less room later</strong><p>${allocation}. Clustering energy-consuming activity can still leave less opportunity to respond if the day changes.</p>` : `<strong>${remaining > 0 ? `${remaining} energy ${remaining === 1 ? "unit" : "units"} left available` : remaining === 0 ? "No energy left available" : `${Math.abs(remaining)} units above today’s estimate`}</strong><p>${allocation}. Adapted amounts, restorative activity and recovery spaces create a clearer stopping point.</p>`;
 }
 document.querySelectorAll("[data-pattern]").forEach(button => button.addEventListener("click", () => renderComparison(button.dataset.pattern)));
 
 function renderPlan() {
-  document.querySelector("#planList").innerHTML = state.activities.filter(row => row.activity).map(row => `<article class="plan-row"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"} · ${row.timing} · ${row.effort === "medium" ? "moderate" : row.effort} effort · ${row.recovery === "none" ? "no planned pause" : row.recovery + " recovery"}</small></div><select data-version="${row.id}" aria-label="Amount today for ${escapeHtml(rowLabel(row))}">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"],["move","Move to another day"],["help","Ask for help"]],row.version)}</select></article>`).join("");
+  document.querySelector("#planList").innerHTML = state.activities.filter(row => row.activity).map(row => `<article class="plan-row"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${isRestorative(row) ? "+" : "−"}${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"} · ${row.timing} · ${isRestorative(row) ? "restorative" : `${row.effort === "medium" ? "moderate" : row.effort} effort`} · ${row.recovery === "none" ? "no planned pause" : row.recovery + " recovery"}</small></div><select data-version="${row.id}" aria-label="Amount today for ${escapeHtml(rowLabel(row))}">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"],["move","Move to another day"],["help","Ask for help"]],row.version)}</select></article>`).join("");
 }
 document.querySelector("#paceForm").addEventListener("submit", event => {
   event.preventDefault(); document.querySelectorAll("[data-version]").forEach(select => { const row=state.activities.find(item=>item.id===select.dataset.version); if(row) row.version=select.value; }); save();
@@ -211,7 +249,7 @@ document.querySelector("#startPacingAgain").addEventListener("click", () => {
   document.querySelector("#meaningfulActivity").value = "";
   document.querySelector("#recoveryChoice").value = "";
   document.querySelector("#lowerVersion").value = "";
-  document.querySelectorAll('[name="capacity"]').forEach(input => { input.checked = Number(input.value) === state.capacity; });
+  syncCapacityControls();
   renderRows();
   document.querySelector("#saveStatus").textContent = "Fresh pacing plan started. Nothing from the previous draft remains.";
   history.replaceState(null, "", location.pathname);
