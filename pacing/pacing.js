@@ -24,8 +24,23 @@ const exampleRows = () => [
   { id: makeId(), activity: "connection", custom: "", effort: "medium", version: "full", timing: "midday", recovery: "short" },
   { id: makeId(), activity: "relax", custom: "", effort: "light", version: "minimum", timing: "afternoon", recovery: "none" }
 ];
-const freshState = () => ({ capacity: 12, activities: [], meaningfulActivity: "", recoveryChoice: "", lowerVersion: "", pattern: "boom" });
+function dateKey(offset = 0) {
+  const date = new Date();
+  date.setHours(12, 0, 0, 0);
+  date.setDate(date.getDate() + offset);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+}
+const freshState = () => ({ planDate: dateKey(), capacity: 12, activities: [], meaningfulActivity: "", recoveryChoice: "", lowerVersion: "", pattern: "boom" });
 let state = load();
+
+function isTomorrowPlan() { return state.planDate === dateKey(1); }
+function dayName() { return isTomorrowPlan() ? "tomorrow" : "today"; }
+function dayPossessive() { return isTomorrowPlan() ? "tomorrow’s" : "today’s"; }
+function formattedDate(offset) {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  return new Intl.DateTimeFormat(undefined, { weekday:"long", day:"numeric", month:"long" }).format(date);
+}
 
 document.querySelectorAll(".capacity-token-set").forEach(set => {
   const units = Number(set.dataset.units) || 0;
@@ -77,8 +92,8 @@ function renderRowsLegacy() {
     <div class="activity-fields">
       <label>Activity<select data-field="activity">${optionMarkup(activityOptions,row.activity)}</select></label>
       <label class="custom-name" ${row.activity === "custom" ? "" : "hidden"}>Name it<input data-field="custom" value="${escapeHtml(row.custom)}" placeholder="Name this activity"></label>
-      <label>Effort today<select data-field="effort">${optionMarkup([["light","Light — 2 units"],["medium","Moderate — 4 units"],["high","Higher — 6 units"]],row.effort)}</select></label>
-      <label>Amount today<select data-field="version">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"]],row.version)}</select></label>
+      <label>Effort ${dayName()}<select data-field="effort">${optionMarkup([["light","Light — 2 units"],["medium","Moderate — 4 units"],["high","Higher — 6 units"]],row.effort)}</select></label>
+      <label>Amount ${dayName()}<select data-field="version">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"]],row.version)}</select></label>
       <label>Timing<select data-field="timing">${optionMarkup([["morning","Morning"],["midday","Midday"],["afternoon","Afternoon"],["evening","Evening"]],row.timing)}</select></label>
       <label>Recovery after<select data-field="recovery">${optionMarkup([["none","No planned pause"],["short","Short pause"],["long","Longer recovery"]],row.recovery)}</select></label>
     </div>
@@ -99,12 +114,12 @@ function renderEnergySummary() {
     ? `${remaining} ${remaining === 1 ? "unit is" : "units are"} left available, giving the day more flexibility.`
     : remaining === 0
       ? "The estimate uses all the energy you selected, leaving no flexibility for change."
-      : `This is ${Math.abs(remaining)} ${Math.abs(remaining) === 1 ? "unit" : "units"} above today’s estimate. Try a smaller amount, reduce an effort estimate or move something.`;
+      : `This is ${Math.abs(remaining)} ${Math.abs(remaining) === 1 ? "unit" : "units"} above ${dayPossessive()} estimate. Try a smaller amount, reduce an effort estimate or move something.`;
   const restorativeText = restorative ? ` − ${restored} restored` : "";
   summary.className = `energy-summary ${remaining < 0 ? "is-over" : remaining === 0 ? "is-full" : "is-within"}`;
-  summary.innerHTML = `<strong>${used} of ${state.capacity} net energy units used</strong><span>${detail}</span><span class="energy-summary__math">${consuming} consuming${restorativeText} = ${used} net used. Restorative estimates cannot take the display above today’s starting energy.</span>`;
+  summary.innerHTML = `<strong>${used} of ${state.capacity} net energy units used</strong><span>${detail}</span><span class="energy-summary__math">${consuming} consuming${restorativeText} = ${used} net used. Restorative estimates cannot take the display above ${dayPossessive()} starting energy.</span>`;
   const tray = document.querySelector("#energyTray");
-  if (tray) tray.innerHTML = `<strong>Energy today</strong><div class="energy-token-line" aria-label="${Math.max(0,remaining)} of ${state.capacity} energy units available">${Array.from({length:state.capacity},(_,index) => `<i class="${index < used ? "is-placed" : ""}"></i>`).join("")}</div><small>${Math.max(0,remaining)} available${restored ? ` · ${restored} restored` : ""}</small>`;
+  if (tray) tray.innerHTML = `<strong>Energy ${dayName()}</strong><div class="energy-token-line" aria-label="${Math.max(0,remaining)} of ${state.capacity} energy units available">${Array.from({length:state.capacity},(_,index) => `<i class="${index < used ? "is-placed" : ""}"></i>`).join("")}</div><small>${Math.max(0,remaining)} available${restored ? ` · ${restored} restored` : ""}</small>`;
 }
 function updateRow(event) {
   const article = event.target.closest("[data-row]");
@@ -153,6 +168,34 @@ document.querySelectorAll("[data-add-activity]").forEach(button => button.addEve
 }));
 renderRows();
 
+function renderDayCopy() {
+  const day = dayName();
+  const possessive = dayPossessive();
+  document.querySelectorAll('[name="planningDay"]').forEach(input => { input.checked = input.value === (isTomorrowPlan() ? "tomorrow" : "today"); });
+  document.querySelector("#todayDateLabel").textContent = `${formattedDate(0)} · plan around how things feel now`;
+  document.querySelector("#tomorrowDateLabel").textContent = `${formattedDate(1)} · prepare gently the evening before`;
+  document.querySelector("#capacityHeading").textContent = `How much energy feels available ${day}?`;
+  document.querySelector("#capacityLegend").textContent = `Capacity available ${day}`;
+  document.querySelector("#customCapacityCopy").textContent = `Use a number that makes more sense for you ${day}.`;
+  document.querySelector("#customCapacityLabel").textContent = `Custom energy units available ${day}`;
+  document.querySelector("#chooseActivitiesButton").textContent = `Choose ${possessive} activities`;
+  document.querySelector("#activitiesHeading").textContent = `What needs and deserves space ${day}?`;
+  document.querySelector("#activitiesIntro").textContent = `Mix necessary, meaningful and restorative activity. Energy-consuming activities use units; restorative activities can add units back, up to ${possessive} starting estimate.`;
+  document.querySelector("#meaningfulActivityLabel").textContent = `One activity that would make ${day} feel worthwhile`;
+  document.querySelector("#activityPlannerHeading").textContent = `Place what matters into ${day}`;
+  document.querySelector("#activityRows").setAttribute("aria-label", `Activities placed into ${day}`);
+  document.querySelector("#journeyNextDay").textContent = isTomorrowPlan() ? "Next day" : "Tomorrow";
+  document.querySelector("#planHeading").textContent = `Choose the amount that fits ${day}.`;
+  document.querySelector("#savePlanButton").textContent = `Save ${possessive} plan`;
+  document.querySelector("#finishEyebrow").textContent = `A compassionate plan for ${day}`;
+  renderEnergySummary();
+}
+document.querySelectorAll('[name="planningDay"]').forEach(input => input.addEventListener("change", () => {
+  state.planDate = dateKey(input.value === "tomorrow" ? 1 : 0);
+  save();
+  renderDayCopy();
+}));
+
 const presetCapacities = [4,8,12,16,22];
 const customCapacityInput = document.querySelector("#customCapacity");
 const customCapacityChoice = document.querySelector("#capacityCustomChoice");
@@ -174,6 +217,7 @@ customCapacityInput.addEventListener("input", () => {
   save(); renderEnergySummary();
 });
 syncCapacityControls();
+renderDayCopy();
 document.querySelector("#meaningfulActivity").value = state.meaningfulActivity;
 document.querySelector("#recoveryChoice").value = state.recoveryChoice;
 document.querySelector("#lowerVersion").value = state.lowerVersion;
@@ -230,18 +274,18 @@ function renderComparison(pattern = "boom") {
   document.querySelector("#journeyEvents").innerHTML = data.events.map(event => `<span class="journey-event is-${event.kind}" style="--event-x:${event.x / 9}%;--event-y:${event.y / 3}%"><i></i><b>${escapeHtml(event.label)}</b></span>`).join("");
   const { consuming, restored, used, remaining } = energyTotals();
   const allocation = `${consuming} consuming${restored ? ` − ${restored} restored` : ""} = ${used} net energy units used`;
-  document.querySelector("#journeyOutcome").innerHTML = pattern === "boom" ? `<strong>Less room later</strong><p>${allocation}. Clustering energy-consuming activity can still leave less opportunity to respond if the day changes.</p>` : `<strong>${remaining > 0 ? `${remaining} energy ${remaining === 1 ? "unit" : "units"} left available` : remaining === 0 ? "No energy left available" : `${Math.abs(remaining)} units above today’s estimate`}</strong><p>${allocation}. Adapted amounts, restorative activity and recovery spaces create a clearer stopping point.</p>`;
+  document.querySelector("#journeyOutcome").innerHTML = pattern === "boom" ? `<strong>Less room later</strong><p>${allocation}. Clustering energy-consuming activity can still leave less opportunity to respond if the day changes.</p>` : `<strong>${remaining > 0 ? `${remaining} energy ${remaining === 1 ? "unit" : "units"} left available` : remaining === 0 ? "No energy left available" : `${Math.abs(remaining)} units above ${dayPossessive()} estimate`}</strong><p>${allocation}. Adapted amounts, restorative activity and recovery spaces create a clearer stopping point.</p>`;
 }
 document.querySelectorAll("[data-pattern]").forEach(button => button.addEventListener("click", () => renderComparison(button.dataset.pattern)));
 
 function renderPlan() {
-  document.querySelector("#planList").innerHTML = state.activities.filter(row => row.activity).map(row => `<article class="plan-row"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${isRestorative(row) ? "+" : "−"}${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"} · ${row.timing} · ${isRestorative(row) ? "restorative" : `${row.effort === "medium" ? "moderate" : row.effort} effort`} · ${row.recovery === "none" ? "no planned pause" : row.recovery + " recovery"}</small></div><select data-version="${row.id}" aria-label="Amount today for ${escapeHtml(rowLabel(row))}">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"],["move","Move to another day"],["help","Ask for help"]],row.version)}</select></article>`).join("");
+  document.querySelector("#planList").innerHTML = state.activities.filter(row => row.activity).map(row => `<article class="plan-row"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${isRestorative(row) ? "+" : "−"}${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"} · ${row.timing} · ${isRestorative(row) ? "restorative" : `${row.effort === "medium" ? "moderate" : row.effort} effort`} · ${row.recovery === "none" ? "no planned pause" : row.recovery + " recovery"}</small></div><select data-version="${row.id}" aria-label="Amount ${dayName()} for ${escapeHtml(rowLabel(row))}">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"],["move","Move to another day"],["help","Ask for help"]],row.version)}</select></article>`).join("");
 }
 document.querySelector("#paceForm").addEventListener("submit", event => {
   event.preventDefault(); document.querySelectorAll("[data-version]").forEach(select => { const row=state.activities.find(item=>item.id===select.dataset.version); if(row) row.version=select.value; }); save();
   document.querySelectorAll(".pace-step").forEach(section => section.hidden=true); document.querySelector(".pace-progress").hidden=true;
   const meaningful=state.meaningfulActivity || state.activities.find(row=>row.activity)?.custom || rowLabel(state.activities.find(row=>row.activity));
-  document.querySelector("#finishSummary").textContent=`You have made space for ${meaningful.toLowerCase()}, with amounts and recovery choices that can change with the day.`;
+  document.querySelector("#finishSummary").textContent=`You have made space for ${meaningful.toLowerCase()}, with amounts and recovery choices that can change if ${dayName()} changes.`;
   const panel=document.querySelector("#finishPanel"); panel.hidden=false; panel.focus(); window.scrollTo({top:0,behavior:"smooth"});
 });
 document.querySelector("#editPlan").addEventListener("click",()=>{ document.querySelector("#finishPanel").hidden=true; document.querySelector(".pace-progress").hidden=false; showStep("plan"); });
@@ -256,6 +300,7 @@ document.querySelector("#startPacingAgain").addEventListener("click", () => {
   document.querySelector("#lowerVersion").value = "";
   syncCapacityControls();
   renderRows();
+  renderDayCopy();
   document.querySelector("#saveStatus").textContent = "Fresh pacing plan started. Nothing from the previous draft remains.";
   history.replaceState(null, "", location.pathname);
   showStep("capacity");
