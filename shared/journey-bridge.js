@@ -82,6 +82,9 @@
     const panel = document.createElement("section");
     panel.className = "vision-next vision-return";
     panel.innerHTML = `<h2>Finished here for now?</h2><p>You can return whenever you are ready.</p><a href="${href}">&larr; ${label}</a>`;
-    document.querySelector("main")?.append(panel);
+    const main = document.querySelector("main");
+    const layout = main?.closest(".layout");
+    if (layout) layout.insertAdjacentElement("afterend", panel);
+    else main?.append(panel);
   }
 }());
