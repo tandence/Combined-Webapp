@@ -233,6 +233,7 @@ h2 { margin: 0; font-size: clamp(2.4rem, 5vw, 4.6rem); line-height: 1; letter-sp
 .compass-statement small { color: var(--gold); letter-spacing: .12em; text-transform: uppercase; }
 .compass-statement p { margin: 9px 0 0; font: 400 1.18rem/1.6 Georgia, serif; }
 .seasonal-values { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; margin-top: 36px; }
+.seasonal-values.is-single { grid-template-columns: 1fr; }
 .seasonal-values section { padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.03); }
 .seasonal-values section > p:last-child { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; color: var(--muted); line-height: 1.6; }
 .seasonal-values span { padding: 5px 9px; border: 1px solid var(--line); border-radius: 999px; color: inherit; font-size: .76rem; }
@@ -910,6 +911,17 @@ h2 {
   height:1px;
   margin:18px auto 0;
   background:color-mix(in srgb,var(--choice-accent) 58%,transparent);
+}
+.sort-layout [data-undo-sort],
+.reflection-panel [data-undo-sort]{
+  color:#234f47;
+  border-bottom-color:#8a632a;
+  font-weight:750;
+}
+.sort-layout [data-undo-sort]:hover,
+.reflection-panel [data-undo-sort]:hover{
+  color:#102f2b;
+  border-bottom-color:#102f2b;
 }
 .sort-choice small{
   max-width:220px!important;

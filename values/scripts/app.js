@@ -455,15 +455,18 @@ function pageCompass() {
   const north = getValue(state.northStar) || getValue(state.candidates[0]);
   const finalists = getValues(state.candidates);
   if (!north) return pageWelcome();
-  const stillMatter = getValues(state.piles.important).slice(0, 12);
-  const revisit = getValues(state.piles.unsure).slice(0, 12);
+  const finalistIds = new Set(finalists.map(value => value.id));
+  const stillMatter = getValues([
+    ...state.piles.essential.filter(id => !finalistIds.has(id)),
+    ...state.piles.important
+  ]).slice(0, 12);
   const history = state.compassHistory.slice(-5).reverse();
   const pieceConnections = finalists.filter(value => value.back?.jigsaw).map(value => ({ value, piece: value.back.jigsaw }));
   return `<section class="page compass-layout"><div class="compass-visual"><div class="compass-centre"><small>North Star</small><strong>${north.title}</strong><div class="compass-values">${finalists.filter(v => v.id !== north.id).map(v => `<span>${v.title}</span>`).join("<span>·</span>")}</div></div></div>
     <div><p class="eyebrow">My Compass</p><h2>Bring ${north.title.toLowerCase()} into the life in front of you.</h2><p class="lead">A compass becomes useful when it meets a real day. Keep the actions small enough to live.</p>
       ${state.synthesis ? `<div class="compass-statement"><small>What these values point towards</small><p>${escapeHtml(state.synthesis)}</p></div>` : ""}
       <form class="action-form" id="actionForm"><label>What this value looks like for me<textarea name="looksLike" placeholder="In my life, this could look like…">${escapeHtml(state.actions.looksLike)}</textarea></label><label>This week<textarea name="thisWeek" placeholder="One gentle intention for this week…">${escapeHtml(state.actions.thisWeek)}</textarea></label><label>Tomorrow<textarea name="tomorrow" placeholder="One small action I can take tomorrow…">${escapeHtml(state.actions.tomorrow)}</textarea></label><div class="intro-actions"><button class="button" type="submit">Save my compass</button><button class="button secondary" type="button" data-go="next-steps">Continue the journey</button></div><p class="save-status" id="saveStatus">Your reflections are saved on this device as you write.</p></form>
-      <div class="seasonal-values"><section><p class="eyebrow">Values that still matter</p><p>${stillMatter.length ? stillMatter.map(value => `<span>${value.title}</span>`).join("") : "The values you marked Important will appear here."}</p></section><section><p class="eyebrow">Values to revisit</p><p>${revisit.length ? revisit.map(value => `<span>${value.title}</span>`).join("") : "The values you marked Not Important Right Now will appear here."}</p></section></div>
+      <div class="seasonal-values is-single"><section><p class="eyebrow">Values that still matter</p><p>${stillMatter.length ? stillMatter.map(value => `<span>${value.title}</span>`).join("") : "Other Essential and Important values will appear here."}</p></section></div>
       <div class="compass-tools"><button class="button secondary" type="button" data-export-save>Export my compass</button><label class="button secondary" for="importSave">Import a saved journey</label><input id="importSave" type="file" accept="application/json,.json" data-import-save hidden></div>
       ${history.length ? `<details class="compass-history"><summary>Earlier compass reflections</summary>${history.map(item => `<article><small>${new Date(item.createdAt).toLocaleDateString()}</small><h3>${item.values.map(value => escapeHtml(value.title)).join(" · ")}</h3><p>${escapeHtml(item.synthesis || "A compass saved for this season.")}</p></article>`).join("")}</details>` : ""}
     </div></section>`;
@@ -545,8 +548,11 @@ function pageCompassElevated() {
   const pieceConnections = finalists.filter(value => value.back?.jigsaw).map(value => ({ value, piece: value.back.jigsaw }));
   const selectedPiece = goalPieceOptions().find(piece => piece.id === state.goal.pieceId);
   const hasGoal = Boolean(selectedPiece && state.goal.picture.trim() && state.goal.statement.trim() && state.goal.firstStep.trim());
-  const stillMatter = getValues(state.piles.important).slice(0, 12);
-  const revisit = getValues(state.piles.unsure).slice(0, 12);
+  const finalistIds = new Set(finalists.map(value => value.id));
+  const stillMatter = getValues([
+    ...state.piles.essential.filter(id => !finalistIds.has(id)),
+    ...state.piles.important
+  ]).slice(0, 12);
   const history = state.compassHistory.slice(-5).reverse();
   return `<section class="page compass-page">
     ${goalProgress("Compass")}
@@ -560,7 +566,7 @@ function pageCompassElevated() {
     </div>
     <section class="jigsaw-connections-panel"><header><p class="eyebrow">Your personal jigsaw bridge</p><h2>${hasGoal ? "One piece holds your goal. The others stay nearby." : "Where your three values connect."}</h2><p>${hasGoal ? `You chose ${selectedPiece.title}. Your other value connections remain available whenever the picture changes.` : "Each chosen value maps to a practical Pain Management Jigsaw piece. Choose one to give your values a place to act."}</p></header><div class="value-piece-map">${pieceConnections.map(({ value, piece }) => `<article class="value-piece-connection${value.id === north.id ? " is-north" : ""}${piece.id === state.goal.pieceId ? " is-goal-piece" : ""}"><div class="mapped-value"><small>${value.id === north.id ? "North Star" : "Supporting value"}</small><strong>${value.title}</strong></div><span class="mapping-arrow" aria-hidden="true">→</span><a href="#${piece.id}" data-integration="pain" data-piece="${piece.id}"><small>${piece.id === state.goal.pieceId ? "Chosen for my goal" : "Pain Management Jigsaw piece"}</small><strong>${piece.title}</strong><p>${piece.connection}</p><span>Explore this piece →</span></a></article>`).join("")}</div></section>
     <section class="compass-ecosystem"><div><p class="eyebrow">Part of your wider picture</p><h2>Carry the goal into the jigsaws.</h2><p>Your compass, chosen piece and first step can now travel together into the part of life you want to work with next.</p></div><div class="ecosystem-links"><a class="ecosystem-link" href="#build-my-jigsaw" data-integration="build"><small>Create the picture</small><strong>Create My Jigsaw</strong><span>Continue with my goal →</span></a><a class="ecosystem-link" href="#pain-management-jigsaw" data-integration="pain" ${state.goal.pieceId ? `data-piece="${state.goal.pieceId}"` : ""}><small>Live well with pain</small><strong>Pain Management Jigsaw</strong><span>Continue with my chosen piece →</span></a><a class="ecosystem-link" href="#plan-my-pace" data-integration="pace"><small>Plan around capacity</small><strong>Plan My Day</strong><span>Continue with my first step →</span></a></div></section>
-    <details class="compass-supporting-values"><summary>Keep my other values nearby</summary><div class="seasonal-values"><section><p class="eyebrow">Values that still matter</p><p>${stillMatter.length ? stillMatter.map(value => `<span>${value.title}</span>`).join("") : "The values you marked Important will appear here."}</p></section><section><p class="eyebrow">Values to revisit</p><p>${revisit.length ? revisit.map(value => `<span>${value.title}</span>`).join("") : "The values you marked Not Important Right Now will appear here."}</p></section></div></details>
+    <details class="compass-supporting-values"><summary>Keep my other values nearby</summary><div class="seasonal-values is-single"><section><p class="eyebrow">Values that still matter</p><p>${stillMatter.length ? stillMatter.map(value => `<span>${value.title}</span>`).join("") : "Other Essential and Important values will appear here."}</p></section></div></details>
     <details class="compass-file-tools"><summary>Save file and earlier compasses</summary><div class="compass-tools"><button class="button secondary" type="button" data-export-save>Export my compass</button><label class="button secondary" for="importSave">Import a saved journey</label><input id="importSave" type="file" accept="application/json,.json" data-import-save hidden></div>${history.length ? `<div class="compass-history">${history.map(item => `<article><small>${new Date(item.createdAt).toLocaleDateString()}</small><h3>${item.values.map(value => escapeHtml(value.title)).join(" &middot; ")}</h3><p>${escapeHtml(item.synthesis || "A compass saved for this season.")}</p></article>`).join("")}</div>` : ""}</details>
   </section>`;
 }
@@ -880,6 +886,7 @@ function saveActions() {
 function compassSnapshot() {
   const finalists = getValues(state.candidates);
   if (finalists.length !== 3 || !state.northStar) return null;
+  const finalistIds = new Set(finalists.map(value => value.id));
   return {
     createdAt: new Date().toISOString(),
     values: finalists.map(value => ({ id: value.id, title: value.title, category: value.category })),
@@ -887,8 +894,10 @@ function compassSnapshot() {
     synthesis: state.synthesis,
     actions: { ...state.actions },
     goal: { ...state.goal },
-    stillMatter: [...state.piles.important],
-    revisit: [...state.piles.unsure]
+    stillMatter: [
+      ...state.piles.essential.filter(id => !finalistIds.has(id)),
+      ...state.piles.important
+    ].slice(0, 12)
   };
 }
 
