@@ -82,6 +82,11 @@ function migrateState(saved = {}) {
   migrated.compassHistory = Array.isArray(saved.compassHistory) ? saved.compassHistory : [];
   migrated.revealSampleIds = Array.isArray(saved.revealSampleIds) ? saved.revealSampleIds : [];
   migrated.synthesis = typeof saved.synthesis === "string" ? saved.synthesis : "";
+  if (migrated.pendingTarget && ![10, 5, 3].includes(migrated.pendingTarget)) {
+    migrated.pendingTarget = null;
+    migrated.reflectionFrom = null;
+    migrated.reductionSelection = [];
+  }
   return migrated;
 }
 
@@ -324,7 +329,9 @@ function togglePreviewCard(card) {
 
 function nextUnsortedValue() {
   const sorted = new Set(Object.values(state.piles).flat());
-  return balancedDeckValues().find(value => !sorted.has(value.id)) || null;
+  const balance = getValue("balance");
+  if (balance && !sorted.has(balance.id)) return balance;
+  return balancedDeckValues().find(value => value.id !== "balance" && !sorted.has(value.id)) || null;
 }
 
 function pageSort() {
@@ -372,15 +379,13 @@ function pageSortComplete() {
 }
 
 const reductionPrompts = {
-  40: "Which values feel necessary, rather than simply admirable?",
-  20: "Which values are already visible in the life you most want to live?",
   10: "Which values would you regret losing?",
   5: "Which values consistently bring out the best in you?",
   3: "If life became difficult tomorrow, which three would still guide your choices?"
 };
 
 function nextTarget(count) {
-  return [40, 20, 10, 5, 3].find(target => target < count) || null;
+  return [10, 5, 3].find(target => target < count) || null;
 }
 
 function routeForTarget(target) {
