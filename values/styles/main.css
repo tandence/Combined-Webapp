@@ -899,6 +899,8 @@ h2 {
 .sort-choice strong{
   max-width:210px!important;
   font-size:clamp(1.9rem,1.85vw,2.25rem)!important;
+  line-height:1.16!important;
+  padding-top:.1em;
 }
 .sort-choice strong::after{
   content:"";
