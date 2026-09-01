@@ -122,11 +122,12 @@ function renderBoard(host,rows,phase) {
 }
 
 function renderUsualPatternSummary() {
-  const host=document.querySelector("#patternSummary"); const guide=document.querySelector("#capacityGuide"); const capacity=capacityCopy[state.capacity]||capacityCopy.usual; const details=patternDetails(state.activities);
+  const host=document.querySelector("#patternSummary"); const guide=document.querySelector("#capacityGuide"); const capacity=capacityCopy[state.capacity]||capacityCopy.usual; const signals=patternSignals(state.activities); const details=signals.details; const observations=patternObservations(state.activities);
   guide.innerHTML=`<strong>${capacity.title}</strong><span>${capacity.detail}</span><small>Energy is a personal guide, not something you need to calculate.</small>`;
   if(!details.active.length&&!details.dedicatedBreaks){host.className="pattern-summary is-empty";host.innerHTML="<strong>Build the day one choice at a time.</strong><span>Add something necessary, something meaningful and a planned break.</span>";return;}
-  const pattern=details.clusterCount>=2?`<strong>${details.clusterCount} activities sit ${timingLabels[details.clusterTiming].toLowerCase()}.</strong><span>This is a pattern to notice—not something you have done wrong.</span>`:`<strong>This day is already fairly spread out.</strong><span>You can still explore amount and planned breaks.</span>`;
-  host.className=`pattern-summary ${details.clusterCount>=2?"is-clustered":"is-steady"}`; host.innerHTML=`${pattern}<small>${details.dedicatedBreaks?`${details.dedicatedBreaks} planned ${details.dedicatedBreaks===1?"break":"breaks"} already included.`:"No dedicated break has been placed yet."}</small>`;
+  const headline=signals.balanced?"This day already looks reasonably balanced.":observations[0]||"The board gives you a useful view of the day.";
+  const supporting=signals.balanced?"You may only need one small adjustment—or none at all.":observations[1]||"This is a pattern to notice, not something you have done wrong.";
+  host.className=`pattern-summary ${signals.balanced||signals.isSpread?"is-steady":"is-clustered"}`; host.innerHTML=`<strong>${headline}</strong><span>${supporting}</span><small>${details.dedicatedBreaks?`${details.dedicatedBreaks} planned ${details.dedicatedBreaks===1?"break":"breaks"} already included.`:"No dedicated break has been placed yet."}</small>`;
 }
 function renderUsualBoard(){renderBoard(usualHost,state.activities,"usual");renderUsualPatternSummary();}
 document.querySelectorAll("[data-add-activity]").forEach(button=>button.addEventListener("click",()=>{const activity=button.dataset.addActivity;const type=activityMeta[activity]?.type||"meaningful";state.activities.push({id:makeId(),activity,custom:"",category:type,effort:"medium",version:"full",timing:"afternoon",recovery:"none"});save();renderUsualBoard();const card=usualHost.querySelector(`[data-row="${state.activities.at(-1).id}"]`);if(activity==="custom")card?.querySelector("details")?.setAttribute("open","");card?.scrollIntoView({behavior:"smooth",block:"center"});}));
