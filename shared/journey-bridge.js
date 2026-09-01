@@ -40,7 +40,7 @@
     returnLink.textContent = "\u2190 Return to my values and goal";
     bar.insertAdjacentElement("afterend", returnLink);
   }
-  if (params.has("journey") || params.has("demo")) {
+  if (!inPacing && (params.has("journey") || params.has("demo"))) {
     const flag = document.createElement("div");
     flag.className = "vision-demo-flag";
     flag.textContent = "Prepared demonstration";

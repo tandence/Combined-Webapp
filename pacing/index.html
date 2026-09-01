@@ -4,56 +4,48 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#102f38">
-  <meta name="description" content="Plan meaningful activities around the capacity you expect today or tomorrow.">
+  <meta name="description" content="Create a steadier, flexible plan around necessary and meaningful activity.">
   <title>Plan My Day — Pain Jigsaw</title>
   <link rel="icon" href="../pain-jigsaw/assets/app-icons/favicon.ico" sizes="any">
   <link rel="stylesheet" href="../shared/journey-bridge.css">
   <link rel="stylesheet" href="pacing.css">
-  <link rel="stylesheet" href="pacing-enhancements.css?v=6">
+  <link rel="stylesheet" href="pacing-enhancements.css?v=9">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to the pacing plan</a>
   <main id="main" tabindex="-1">
     <header class="pace-hero">
-      <p class="eyebrow">Plan My Day · pacing demonstration</p>
+      <p class="eyebrow">Plan My Day · put pacing into practice</p>
       <h1>Make room for what matters—without doing everything at once.</h1>
-      <p>Pacing is not about doing as little as possible. It can help you notice capacity, plan activity and recovery, and find a version that feels more sustainable—today or tomorrow.</p>
+      <p>Plan necessary and meaningful activity, spread things out and protect breaks. The aim is a steadier rhythm—not doing everything or doing nothing.</p>
       <div class="handoff-summary" id="handoffSummary" hidden></div>
     </header>
 
     <nav class="pace-progress" aria-label="Pacing plan progress">
-      <span class="is-current" aria-current="step">Capacity</span><span>Activities</span><span>Compare</span><span>My plan</span>
+      <span class="is-current" aria-current="step">Set the scene</span><span>Usual day</span><span>Make it steadier</span><span>Compare</span><span>My plan</span>
     </nav>
 
     <form id="paceForm">
       <section class="pace-step is-active" data-step="capacity" aria-labelledby="capacityHeading">
-        <div class="step-copy"><p class="step-number">Step 1</p><h2 id="capacityHeading">How much energy feels available today?</h2><p>Choose the closest estimate. This is a personal planning guide—not a measurement of your health or a prediction of symptoms.</p></div>
+        <div class="step-copy"><p class="step-number">Step 1 · plan ahead</p><h2 id="capacityHeading">What kind of day are you planning for?</h2><p>Choose the closest broad guide. It is not a score, a target or a prediction of symptoms.</p></div>
         <fieldset class="planning-day-field"><legend>Which day are you planning?</legend><div class="planning-day-options">
           <label><input type="radio" name="planningDay" value="today" checked><span><strong>Today</strong><small id="todayDateLabel">Plan around how things feel now</small></span></label>
           <label><input type="radio" name="planningDay" value="tomorrow"><span><strong>Tomorrow</strong><small id="tomorrowDateLabel">Prepare gently the evening before</small></span></label>
         </div></fieldset>
-        <fieldset class="capacity-field"><legend class="sr-only" id="capacityLegend">Capacity available today</legend><div class="capacity-options">
-          <label><input type="radio" name="capacity" value="4"><span><strong>Very limited</strong><span class="capacity-token-set" data-units="4" role="img" aria-label="4 energy units available"></span><small>Keep plans especially light</small></span></label>
-          <label><input type="radio" name="capacity" value="8"><span><strong>Lower</strong><span class="capacity-token-set" data-units="8" role="img" aria-label="8 energy units available"></span><small>Adapt amounts and protect pauses</small></span></label>
-          <label><input type="radio" name="capacity" value="12" checked><span><strong>Some</strong><span class="capacity-token-set" data-units="12" role="img" aria-label="12 energy units available"></span><small>Balance activity and recovery</small></span></label>
-          <label><input type="radio" name="capacity" value="16"><span><strong>More</strong><span class="capacity-token-set" data-units="16" role="img" aria-label="16 energy units available"></span><small>Leave some flexibility</small></span></label>
-          <label><input type="radio" name="capacity" value="22"><span><strong>Plenty</strong><span class="capacity-token-set" data-units="22" role="img" aria-label="22 energy units available"></span><small>Enough to represent a busy day</small></span></label>
-        </div>
-        <div class="custom-capacity">
-          <input type="radio" id="capacityCustomChoice" name="capacity" value="custom">
-          <label for="capacityCustomChoice"><strong>Choose my own estimate</strong><small id="customCapacityCopy">Use a number that makes more sense for you today.</small></label>
-          <label class="sr-only" for="customCapacity" id="customCapacityLabel">Custom energy units available today</label>
-          <input id="customCapacity" type="number" min="1" max="40" step="1" inputmode="numeric" value="12" aria-describedby="customCapacityUnit">
-          <span id="customCapacityUnit">energy units</span>
-        </div></fieldset>
-        <div class="step-actions"><a href="../pain-jigsaw/activity.html?return=pacing" class="secondary-button">Review activity learning</a><button type="button" class="primary-button" id="chooseActivitiesButton" data-next="activities">Choose today’s activities</button></div>
+        <fieldset class="capacity-field"><legend id="capacityLegend">How manageable does the day feel from here?</legend><div class="capacity-options capacity-options--subjective">
+          <label><input type="radio" name="capacity" value="very-limited"><span><strong>Very limited</strong><small>Keep the plan especially gentle</small></span></label>
+          <label><input type="radio" name="capacity" value="lower"><span><strong>Lower than usual</strong><small>Choose less and protect breaks</small></span></label>
+          <label><input type="radio" name="capacity" value="usual" checked><span><strong>About usual</strong><small>Aim for a steady rhythm</small></span></label>
+          <label><input type="radio" name="capacity" value="more"><span><strong>More available</strong><small>Leave room rather than filling it</small></span></label>
+        </div><p class="capacity-reassurance">This is only a starting point. You can change the plan if the day changes.</p></fieldset>
+        <div class="step-actions"><a href="../pain-jigsaw/activity.html?return=pacing" class="secondary-button">Review Activity Management</a><button type="button" class="primary-button" id="chooseActivitiesButton" data-next="activities">Choose what matters today</button></div>
       </section>
 
       <section class="pace-step" data-step="activities" aria-labelledby="activitiesHeading" hidden>
-        <div class="step-copy"><p class="step-number">Step 2</p><h2 id="activitiesHeading">What needs and deserves space today?</h2><p id="activitiesIntro">Mix necessary, meaningful and restorative activity. Energy-consuming activities use units; restorative activities can add units back, up to today’s starting estimate.</p></div>
+        <div class="step-copy"><p class="step-number">Step 2 · prioritise</p><h2 id="activitiesHeading">What needs and deserves space today?</h2><p id="activitiesIntro">Start with what is necessary and what is meaningful. Add a planned break before the day fills up.</p></div>
         <div class="goal-prompt"><label for="meaningfulActivity" id="meaningfulActivityLabel">One activity that would make today feel worthwhile</label><input id="meaningfulActivity" name="meaningfulActivity" placeholder="For example, spend time in the garden"></div>
         <section class="activity-planner" aria-labelledby="activityPlannerHeading">
-          <div class="day-builder-heading"><div><p class="card-kicker">Your day board</p><h3 id="activityPlannerHeading">Place what matters into today</h3><p>Choose a tile. Then open a placed card only when you want to change its energy, amount or position.</p></div><div class="energy-tray" id="energyTray" aria-live="polite"></div></div>
+          <div class="day-builder-heading"><div><p class="card-kicker">Your usual pattern</p><h3 id="activityPlannerHeading">Place what matters into today</h3><p>Add activities as they might usually happen. Open a card to change the amount, timing or planned break.</p></div><div class="capacity-guide" id="capacityGuide" aria-live="polite"></div></div>
           <div class="activity-palette" aria-label="Activities to add">
             <button type="button" data-add-activity="personal-care"><span aria-hidden="true">◆</span><strong>Personal care</strong><small>Necessary</small></button>
             <button type="button" data-add-activity="meal"><span aria-hidden="true">◆</span><strong>Prepare a meal</strong><small>Necessary</small></button>
@@ -61,59 +53,73 @@
             <button type="button" data-add-activity="connection"><span aria-hidden="true">●</span><strong>Time with someone</strong><small>Meaningful</small></button>
             <button type="button" data-add-activity="outside"><span aria-hidden="true">●</span><strong>Time outside</strong><small>Meaningful</small></button>
             <button type="button" data-add-activity="movement"><span aria-hidden="true">●</span><strong>Comfortable movement</strong><small>Meaningful</small></button>
-            <button type="button" data-add-activity="pause"><span aria-hidden="true">○</span><strong>Quiet pause</strong><small>Restorative</small></button>
-            <button type="button" data-add-activity="relax"><span aria-hidden="true">○</span><strong>Relaxation</strong><small>Restorative</small></button>
-            <button type="button" data-add-activity="custom"><span aria-hidden="true">＋</span><strong>Something else</strong><small>Consuming or restorative</small></button>
+            <button type="button" data-add-activity="pause"><span aria-hidden="true">○</span><strong>Quiet pause</strong><small>Planned break</small></button>
+            <button type="button" data-add-activity="relax"><span aria-hidden="true">○</span><strong>Relaxation</strong><small>Planned break</small></button>
+            <button type="button" data-add-activity="custom"><span aria-hidden="true">＋</span><strong>Something else</strong><small>Name what matters</small></button>
           </div>
           <div class="day-board" id="activityRows" aria-label="Activities placed into today"></div>
-          <div class="energy-summary" id="energySummary" role="status" aria-live="polite"></div>
+          <div class="pattern-summary" id="patternSummary" role="status" aria-live="polite"></div>
         </section>
-        <div class="step-actions"><button type="button" class="secondary-button" data-back="capacity">Back</button><button type="button" class="primary-button" data-next="compare">Compare my day</button></div>
+        <div class="step-actions"><button type="button" class="secondary-button" data-back="capacity">Back</button><button type="button" class="primary-button" data-next="pace">Make it steadier</button></div>
+      </section>
+
+      <section class="pace-step" data-step="pace" aria-labelledby="paceHeading" hidden>
+        <div class="step-copy"><p class="step-number">Step 3 · explore pacing choices</p><h2 id="paceHeading">Shape a steadier version.</h2><p>Your usual day has been kept. Try one change that fits; you do not need to use every pacing move.</p></div>
+        <div class="pacing-workshop">
+          <aside class="pacing-missions" aria-labelledby="missionsHeading"><p class="card-kicker">Three pacing possibilities</p><h3 id="missionsHeading">Choose what fits</h3><ol>
+            <li data-mission="spread"><span aria-hidden="true">1</span><div><strong>Spread activity</strong><small>Move something to another part of the day.</small></div><b>Not tried yet</b></li>
+            <li data-mission="adapt"><span aria-hidden="true">2</span><div><strong>Make a task manageable</strong><small>Choose a smaller, shared or moved version while protecting what matters.</small></div><b>Not tried yet</b></li>
+            <li data-mission="break"><span aria-hidden="true">3</span><div><strong>Protect a break</strong><small>Plan a break before you are already struggling.</small></div><b>Not tried yet</b></li>
+          </ol></aside>
+          <section class="paced-board" aria-labelledby="pacedBoardHeading"><div class="day-builder-heading"><div><p class="card-kicker">Your paced version</p><h3 id="pacedBoardHeading">Make small changes to the pattern</h3><p>Open a card to change its timing, version or planned break.</p></div></div><p class="protect-meaningful-prompt"><strong>Protect what matters most.</strong> Which activity could become more manageable while protecting what matters most?</p><div class="day-board" id="pacedActivityRows" aria-label="Paced version of the day"></div></section>
+        </div>
+        <div class="pace-achievement" id="paceAchievement" role="status" aria-live="polite"></div>
+        <div class="step-actions"><button type="button" class="secondary-button" data-back="activities">Change my usual day</button><button type="button" class="primary-button" id="revealComparison" data-next="compare" disabled>See my comparison</button></div>
       </section>
 
       <section class="pace-step" data-step="compare" id="compare" aria-labelledby="compareHeading" hidden>
-        <div class="step-copy"><p class="step-number">Step 3</p><h2 id="compareHeading">See what pacing changes.</h2><p>The activities stay visible. Compare doing the usual amounts close together with a version that protects pauses, timing and flexibility.</p></div>
+        <div class="step-copy"><p class="step-number">Step 4 · notice the pattern</p><h2 id="compareHeading">See what was helping and what changed.</h2><p>The left is the day as first planned. The right reflects the pacing choice or choices you tried.</p></div>
         <div class="comparison-grid" id="comparisonTables">
           <article class="day-card day-card--over" aria-labelledby="usualPlanHeading">
             <p class="card-kicker">Usual pattern</p>
-            <h3 id="usualPlanHeading">Doing it all close together</h3>
-            <p class="comparison-intro">Usual amounts, without protected recovery space.</p>
+            <h3 id="usualPlanHeading">The day as first planned</h3>
+            <p class="comparison-intro">Your activities as you first placed them.</p>
             <div class="comparison-table-wrap"><table class="comparison-table">
-              <thead><tr><th scope="col">Activity</th><th scope="col">When</th><th scope="col">Energy</th><th scope="col">Pause</th></tr></thead>
+              <thead><tr><th scope="col">Activity</th><th scope="col">When</th><th scope="col">Effort</th><th scope="col">Break</th></tr></thead>
               <tbody id="usualPlanRows"></tbody>
             </table></div>
-            <div class="energy-result" id="usualPlanResult"></div>
+            <div class="pattern-result" id="usualPlanResult"></div>
           </article>
           <article class="day-card day-card--steady" aria-labelledby="pacedPlanHeading">
             <p class="card-kicker">Paced version</p>
             <h3 id="pacedPlanHeading">Making room to respond</h3>
-            <p class="comparison-intro">Flexible amounts, spread through the day with recovery protected.</p>
+            <p class="comparison-intro">Your effort guide, timing, version and break choices.</p>
             <div class="comparison-table-wrap"><table class="comparison-table">
-              <thead><tr><th scope="col">Activity</th><th scope="col">When</th><th scope="col">Energy</th><th scope="col">Pause</th></tr></thead>
+              <thead><tr><th scope="col">Activity</th><th scope="col">When</th><th scope="col">Effort and version</th><th scope="col">Break</th></tr></thead>
               <tbody id="pacedPlanRows"></tbody>
             </table></div>
-            <div class="energy-result" id="pacedPlanResult"></div>
+            <div class="pattern-result" id="pacedPlanResult"></div>
           </article>
         </div>
-        <div class="reflection-callout"><strong>The activities have not disappeared.</strong><p id="comparisonText">Pacing changes the amount, timing and recovery—not what matters to you.</p></div>
+        <div class="reflection-callout"><strong id="comparisonCalloutTitle">What you could try next</strong><p id="comparisonText"></p></div>
         <div class="step-actions"><button type="button" class="secondary-button" data-back="activities">Change activities</button><button type="button" class="primary-button" data-next="plan">Adapt my plan</button></div>
       </section>
 
       <section class="pace-step" data-step="plan" aria-labelledby="planHeading" hidden>
-        <div class="step-copy"><p class="step-number">Step 4</p><h2 id="planHeading">Choose the amount that fits today.</h2><p>A flexible plan can keep you connected to what matters without turning your energy estimate into a target.</p></div>
-        <div class="plan-layout"><div class="plan-list" id="planList"></div><aside class="plan-reflection"><label for="recoveryChoice">What could support recovery?</label><textarea id="recoveryChoice" name="recoveryChoice" placeholder="For example, a quiet pause, changing position, asking for help…"></textarea><label for="lowerVersion">If capacity is lower than expected</label><textarea id="lowerVersion" name="lowerVersion" placeholder="A smaller version could be…"></textarea></aside></div>
+        <div class="step-copy"><p class="step-number">Step 5 · make it flexible</p><h2 id="planHeading">Choose a manageable version for today.</h2><p>You can still change an amount, ask for help or move something. The plan can change without becoming a failure.</p></div>
+        <div class="plan-layout"><div class="plan-list" id="planList"></div><aside class="plan-reflection"><label for="recoveryChoice">My planned break<textarea id="recoveryChoice" name="recoveryChoice" placeholder="For example, pause after lunch before starting the next task…"></textarea></label><label for="lowerVersion">A flexible plan for a more difficult day<textarea id="lowerVersion" name="lowerVersion" placeholder="What could be smaller, moved or shared—and what gentle activity would you keep?"></textarea></label><p>Flare-ups and more difficult days do not mean you have gone backwards. Small adjustments can help you stay steady.</p></aside></div>
         <div class="save-note" role="status" id="saveStatus">This plan is saved only in this browser as you make it.</div>
         <div class="step-actions"><button type="button" class="secondary-button" data-back="compare">Back to comparison</button><button type="submit" class="primary-button" id="savePlanButton">Save today’s plan</button></div>
       </section>
     </form>
 
     <section class="finish-panel" id="finishPanel" hidden tabindex="-1">
-      <p class="eyebrow" id="finishEyebrow">A compassionate plan for today</p><h2>Your plan leaves room to respond.</h2><p id="finishSummary"></p><div><a href="../pain-jigsaw/builder.html?journey=return" class="primary-button">Return to My Jigsaw</a><button type="button" class="secondary-button" id="editPlan">Edit my plan</button></div>
+      <p class="eyebrow" id="finishEyebrow">A flexible plan for today</p><h2>Your steadier plan is ready.</h2><p id="finishSummary"></p><div class="summary-plan" id="summaryPlan"></div><div class="finish-actions"><a href="../pain-jigsaw/builder.html?journey=return" class="primary-button">Return to My Jigsaw</a><button type="button" class="secondary-button" id="editPlan">Edit my plan</button></div>
     </section>
     <aside class="safety-note"><strong>This tool is for reflection and planning.</strong> It does not measure your health or tell you what activity is medically safe. Follow individual advice you have been given and seek professional help for new or concerning symptoms.</aside>
     <div class="pace-reset"><button type="button" class="start-again-button" id="startPacingAgain">Start again</button><small>Clear this pacing draft and begin with a fresh day.</small></div>
   </main>
-  <script src="../shared/journey-bridge.js"></script>
-  <script src="pacing.js?v=5"></script>
+  <script src="../shared/journey-bridge.js?v=2"></script>
+  <script src="pacing.js?v=8"></script>
 </body>
 </html>

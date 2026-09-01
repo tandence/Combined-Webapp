@@ -1,309 +1,209 @@
-const STORAGE_KEY = "living-well-pacing-v4";
+const STORAGE_KEY = "living-well-pacing-v6";
+const SUMMARY_KEY = "pain-jigsaw-my-summary-pacing-v1";
 const HANDOFF_KEY = "life-compass-handoff-values-45-v1";
-const activityOptions = [
-  ["", "Choose an activity"],
-  ["personal-care", "Necessary — personal care"],
-  ["meal", "Necessary — prepare a meal"],
-  ["household", "Necessary — household task"],
-  ["appointment", "Necessary — appointment or errand"],
-  ["connection", "Meaningful — time with someone"],
-  ["outside", "Meaningful — time outside"],
-  ["movement", "Meaningful — comfortable movement"],
-  ["hobby", "Meaningful — hobby or interest"],
-  ["pause", "Restorative — quiet recovery pause"],
-  ["relax", "Restorative — relaxation or mindfulness"],
-  ["custom", "Something else…"]
-];
-const labels = Object.fromEntries(activityOptions);
-const effortPoints = { light: 2, medium: 4, high: 6 };
-const restorativePoints = { light: 1, medium: 2, high: 3 };
-const versionFactors = { full: 1, smaller: .67, minimum: .33 };
-const makeId = () => globalThis.crypto?.randomUUID?.() || `activity-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-const exampleRows = () => [
-  { id: makeId(), activity: "household", custom: "", effort: "high", version: "full", timing: "morning", recovery: "short" },
-  { id: makeId(), activity: "connection", custom: "", effort: "medium", version: "full", timing: "midday", recovery: "short" },
-  { id: makeId(), activity: "relax", custom: "", effort: "light", version: "minimum", timing: "afternoon", recovery: "none" }
-];
-function dateKey(offset = 0) {
-  const date = new Date();
-  date.setHours(12, 0, 0, 0);
-  date.setDate(date.getDate() + offset);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
-}
-const freshState = () => ({ planDate: dateKey(), capacity: 12, activities: [], meaningfulActivity: "", recoveryChoice: "", lowerVersion: "", pattern: "boom" });
+
+const activityMeta = {
+  "personal-care": { label:"Personal care",type:"necessary",demand:"physical" }, meal:{ label:"Prepare a meal",type:"necessary",demand:"physical" },
+  household:{ label:"Household task",type:"necessary",demand:"physical" }, appointment:{ label:"Appointment or errand",type:"necessary",demand:"cognitive" },
+  connection:{ label:"Time with someone",type:"meaningful",demand:"emotional" }, outside:{ label:"Time outside",type:"meaningful",demand:"physical" },
+  movement:{ label:"Comfortable movement",type:"meaningful",demand:"physical" }, hobby:{ label:"Hobby or interest",type:"meaningful",demand:"cognitive" },
+  pause:{ label:"Quiet pause",type:"break",demand:"none" }, relax:{ label:"Relaxation",type:"break",demand:"none" }, custom:{ label:"My activity",type:"meaningful",demand:"general" }
+};
+const timingOptions = [["morning","Morning"],["midday","Midday"],["afternoon","Later"],["evening","Evening"]];
+const timingLabels = Object.fromEntries(timingOptions);
+const effortLabels = { light:"Light",medium:"Moderate",high:"Higher" };
+const versionLabels = { full:"Usual amount",smaller:"Smaller amount",minimum:"Minimum version",help:"Ask for help",move:"Move to another day" };
+const recoveryLabels = { none:"No break planned yet",short:"Short planned break",long:"Longer planned break" };
+const capacityCopy = {
+  "very-limited":{ title:"Very limited",detail:"Keep the plan especially gentle. A small amount can still be meaningful." },
+  lower:{ title:"Lower than usual",detail:"Choose less, make tasks smaller and protect breaks." },
+  usual:{ title:"About usual",detail:"Aim for a steady rhythm rather than filling every space." },
+  more:{ title:"More available",detail:"Notice the pull to do everything. Leave some room for change." }
+};
+const makeId = () => crypto.randomUUID?.() || `activity-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const cloneRows = rows => rows.map(row => ({...row}));
+
+function dateKey(offset = 0) { const date = new Date(); date.setHours(12,0,0,0); date.setDate(date.getDate() + offset); return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`; }
+const freshState = () => ({ planDate:dateKey(),capacity:"usual",activities:[],usualActivities:[],meaningfulActivity:"",recoveryChoice:"",lowerVersion:"" });
+function normaliseCapacity(value) { if (capacityCopy[value]) return value; if (typeof value === "number") return value <= 4 ? "very-limited" : value <= 8 ? "lower" : value <= 16 ? "usual" : "more"; return "usual"; }
+function normaliseRow(row) { const meta = activityMeta[row.activity] || activityMeta.custom; return { id:row.id || makeId(),activity:row.activity || "custom",custom:row.custom || "",category:row.category || (row.nature === "restorative" ? "break" : meta.type),effort:row.effort || "medium",version:versionLabels[row.version] ? row.version : "full",timing:timingLabels[row.timing] ? row.timing : "afternoon",recovery:recoveryLabels[row.recovery] ? row.recovery : "none" }; }
+function load() { try { const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("living-well-pacing-v5") || "null"); if (!saved || !Array.isArray(saved.activities)) return freshState(); return {...freshState(),...saved,capacity:normaliseCapacity(saved.capacity),activities:saved.activities.map(normaliseRow),usualActivities:Array.isArray(saved.usualActivities) ? saved.usualActivities.map(normaliseRow) : []}; } catch { return freshState(); } }
 let state = load();
 
+function save() { try { localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); } catch {} }
+function escapeHtml(value="") { return String(value).replace(/[&<>"']/g,c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
+function handoff() { try { return JSON.parse(sessionStorage.getItem(HANDOFF_KEY) || "null"); } catch { return null; } }
 function isTomorrowPlan() { return state.planDate === dateKey(1); }
 function dayName() { return isTomorrowPlan() ? "tomorrow" : "today"; }
 function dayPossessive() { return isTomorrowPlan() ? "tomorrow’s" : "today’s"; }
-function formattedDate(offset) {
-  const date = new Date();
-  date.setDate(date.getDate() + offset);
-  return new Intl.DateTimeFormat(undefined, { weekday:"long", day:"numeric", month:"long" }).format(date);
-}
+function formattedDate(offset) { const date = new Date(); date.setDate(date.getDate()+offset); return new Intl.DateTimeFormat(undefined,{weekday:"long",day:"numeric",month:"long"}).format(date); }
+function rowLabel(row) { return row.activity === "custom" ? row.custom.trim() || "My activity" : activityMeta[row.activity]?.label || "Activity"; }
+function activityType(row) { return row.activity === "custom" ? row.category : activityMeta[row.activity]?.type || "meaningful"; }
+function isBreak(row) { return activityType(row) === "break"; }
+function optionMarkup(options,current) { return options.map(([value,label]) => `<option value="${value}" ${value===current?"selected":""}>${label}</option>`).join(""); }
 
-document.querySelectorAll(".capacity-token-set").forEach(set => {
-  const units = Number(set.dataset.units) || 0;
-  set.innerHTML = Array.from({length:units},() => '<i aria-hidden="true"></i>').join("");
-});
-
-function load() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    return saved && Array.isArray(saved.activities) ? { ...freshState(), ...saved } : freshState();
-  } catch { return freshState(); }
+function demoUsualRows() {
+  return [
+    { id:"demo-household",activity:"household",custom:"",category:"necessary",effort:"high",version:"full",timing:"afternoon",recovery:"none" },
+    { id:"demo-connection",activity:"connection",custom:"",category:"meaningful",effort:"medium",version:"full",timing:"afternoon",recovery:"none" },
+    { id:"demo-relax",activity:"relax",custom:"",category:"break",effort:"light",version:"full",timing:"evening",recovery:"none" }
+  ];
 }
-function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {} }
-function escapeHtml(value = "") { return String(value).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[c])); }
-function handoff() { try { return JSON.parse(sessionStorage.getItem(HANDOFF_KEY) || "null"); } catch { return null; } }
-function rowLabel(row) { return row.activity === "custom" ? row.custom.trim() || "My activity" : labels[row.activity] || "Activity"; }
-function isRestorative(row) { return ["pause","relax"].includes(row.activity) || (row.activity === "custom" && row.nature === "restorative"); }
-function rowEnergy(row, adapted = true) {
-  const effort = (isRestorative(row) ? restorativePoints : effortPoints)[row.effort] || 1;
-  const factor = adapted ? versionFactors[row.version] || 1 : 1;
-  return Math.max(1, Math.round(effort * factor));
-}
-function energyTotals() {
-  const rows = state.activities.filter(row => row.activity);
-  const consuming = rows.filter(row => !isRestorative(row)).reduce((sum,row) => sum + rowEnergy(row),0);
-  const restorative = rows.filter(isRestorative).reduce((sum,row) => sum + rowEnergy(row),0);
-  const restored = Math.min(restorative, consuming);
-  const used = Math.max(0, consuming - restored);
-  return { consuming, restorative, restored, used, remaining: state.capacity - used };
-}
-function optionMarkup(options, current) { return options.map(([value,label]) => `<option value="${value}" ${value === current ? "selected" : ""}>${label}</option>`).join(""); }
-
+function demoPacedRows() { const rows=cloneRows(demoUsualRows()); rows[0].timing="morning"; rows[0].version="smaller"; rows[0].recovery="short"; rows[1].timing="midday"; rows[1].recovery="short"; rows[2].timing="afternoon"; return rows; }
+const isDemo = new URLSearchParams(location.search).get("demo") === "family";
+if (isDemo) state = {...freshState(),activities:demoUsualRows(),meaningfulActivity:"Spend a little time gardening and still have room for family",recoveryChoice:"Pause after lunch before starting the next activity",lowerVersion:"Tend one pot for ten minutes, ask for help with the household task, or sit outside for a short while"};
 const incoming = handoff();
-if (new URLSearchParams(location.search).get("demo") === "family") {
-  state = { ...freshState(), activities:exampleRows(), meaningfulActivity:"Spend a little time gardening and still have energy for family", recoveryChoice:"Sit somewhere comfortable with a drink between activities", lowerVersion:"Tend one pot for ten minutes, or sit outside and notice the garden" };
-}
-if (incoming?.goal) {
-  const summary = document.querySelector("#handoffSummary");
-  const north = incoming.values?.find(value => value.id === incoming.northStar)?.title || "what matters";
-  summary.hidden = false;
-  summary.innerHTML = `<strong>Carried from your compass: ${escapeHtml(north)}</strong><br>${escapeHtml(incoming.goal.statement || incoming.goal.firstStep || "Your meaningful next step")}`;
-  if (!state.meaningfulActivity) state.meaningfulActivity = incoming.goal.firstStep || incoming.goal.statement || "";
+if (incoming?.goal) { const summary=document.querySelector("#handoffSummary"); const north=incoming.values?.find(value=>value.id===incoming.northStar)?.title||"what matters"; summary.hidden=false; summary.innerHTML=`<strong>Carried from your compass: ${escapeHtml(north)}</strong><br>${escapeHtml(incoming.goal.statement||incoming.goal.firstStep||"Your meaningful next step")}`; if(!state.meaningfulActivity) state.meaningfulActivity=incoming.goal.firstStep||incoming.goal.statement||""; }
+
+function patternDetails(rows) {
+  const active=rows.filter(row=>row.activity&&row.version!=="move"&&!isBreak(row));
+  const dedicatedBreaks=rows.filter(row=>row.activity&&isBreak(row)).length;
+  const protectedBreaks=active.filter(row=>row.recovery!=="none").length+dedicatedBreaks;
+  const counts=Object.fromEntries(timingOptions.map(([timing])=>[timing,active.filter(row=>row.timing===timing).length]));
+  const [clusterTiming,clusterCount]=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]||["afternoon",0];
+  const adapted=rows.filter(row=>row.activity&&!isBreak(row)&&["smaller","minimum","help","move"].includes(row.version)).length;
+  return {active,dedicatedBreaks,protectedBreaks,clusterTiming,clusterCount,adapted,occupied:Object.values(counts).filter(Boolean).length};
 }
 
-const rowsHost = document.querySelector("#activityRows");
-function renderRowsLegacy() {
-  rowsHost.innerHTML = state.activities.map((row,index) => `<article class="activity-row" data-row="${row.id}">
-    <header><span>${index + 1}</span><strong>${escapeHtml(rowLabel(row))}</strong><b class="row-energy">${row.activity ? `${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"}` : "Choose an activity"}</b><button type="button" data-remove-row aria-label="Remove ${escapeHtml(rowLabel(row))}">Remove</button></header>
-    <div class="activity-fields">
-      <label>Activity<select data-field="activity">${optionMarkup(activityOptions,row.activity)}</select></label>
-      <label class="custom-name" ${row.activity === "custom" ? "" : "hidden"}>Name it<input data-field="custom" value="${escapeHtml(row.custom)}" placeholder="Name this activity"></label>
-      <label>Effort ${dayName()}<select data-field="effort">${optionMarkup([["light","Light — 2 units"],["medium","Moderate — 4 units"],["high","Higher — 6 units"]],row.effort)}</select></label>
-      <label>Amount ${dayName()}<select data-field="version">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"]],row.version)}</select></label>
-      <label>Timing<select data-field="timing">${optionMarkup([["morning","Morning"],["midday","Midday"],["afternoon","Afternoon"],["evening","Evening"]],row.timing)}</select></label>
-      <label>Recovery after<select data-field="recovery">${optionMarkup([["none","No planned pause"],["short","Short pause"],["long","Longer recovery"]],row.recovery)}</select></label>
-    </div>
-  </article>`).join("");
-  rowsHost.querySelectorAll("select,input").forEach(control => control.addEventListener("change", updateRow));
-  rowsHost.querySelectorAll("input").forEach(control => control.addEventListener("input", updateRow));
-  rowsHost.querySelectorAll("[data-remove-row]").forEach(button => button.addEventListener("click", () => {
-    if (state.activities.length === 1) return;
-    state.activities = state.activities.filter(row => row.id !== button.closest("[data-row]").dataset.row); save(); renderRows();
-  }));
-  renderEnergySummary();
+function demandFor(row) { return activityMeta[row.activity]?.demand || "general"; }
+function patternSignals(rows) {
+  const details=patternDetails(rows); const active=details.active; const meaningful=active.filter(row=>activityType(row)==="meaningful");
+  const demanding=active.filter(row=>row.effort==="high"); const demandingByTime=timingOptions.map(([timing])=>({timing,rows:demanding.filter(row=>row.timing===timing)})).sort((a,b)=>b.rows.length-a.rows.length)[0];
+  const demandCounts=active.reduce((counts,row)=>{const demand=demandFor(row);if(demand!=="general"&&demand!=="none")counts[demand]=(counts[demand]||0)+1;return counts;},{}); const repeatedDemand=Object.entries(demandCounts).sort((a,b)=>b[1]-a[1])[0];
+  const hasProtectedBreak=details.protectedBreaks>0; const isSpread=active.length>=2&&details.occupied>=Math.min(3,active.length)&&details.clusterCount<3;
+  const balanced=active.length>=2&&isSpread&&hasProtectedBreak&&meaningful.length>0&&(!demandingByTime||demandingByTime.rows.length<2);
+  return {details,active,meaningful,demandingByTime,repeatedDemand,hasProtectedBreak,isSpread,balanced};
 }
-function renderEnergySummary() {
-  const { consuming, restorative, restored, used, remaining } = energyTotals();
-  const summary = document.querySelector("#energySummary");
-  if (!summary) return;
-  const detail = remaining > 0
-    ? `${remaining} ${remaining === 1 ? "unit is" : "units are"} left available, giving the day more flexibility.`
-    : remaining === 0
-      ? "The estimate uses all the energy you selected, leaving no flexibility for change."
-      : `This is ${Math.abs(remaining)} ${Math.abs(remaining) === 1 ? "unit" : "units"} above ${dayPossessive()} estimate. Try a smaller amount, reduce an effort estimate or move something.`;
-  const restorativeText = restorative ? ` − ${restored} restored` : "";
-  summary.className = `energy-summary ${remaining < 0 ? "is-over" : remaining === 0 ? "is-full" : "is-within"}`;
-  summary.innerHTML = `<strong>${used} of ${state.capacity} net energy units used</strong><span>${detail}</span><span class="energy-summary__math">${consuming} consuming${restorativeText} = ${used} net used. Restorative estimates cannot take the display above ${dayPossessive()} starting energy.</span>`;
-  const tray = document.querySelector("#energyTray");
-  if (tray) tray.innerHTML = `<strong>Energy ${dayName()}</strong><div class="energy-token-line" aria-label="${Math.max(0,remaining)} of ${state.capacity} energy units available">${Array.from({length:state.capacity},(_,index) => `<i class="${index < used ? "is-placed" : ""}"></i>`).join("")}</div><small>${Math.max(0,remaining)} available${restored ? ` · ${restored} restored` : ""}</small>`;
+function baselineStrengths(rows) {
+  const signals=patternSignals(rows); const strengths=[];
+  if(signals.isSpread)strengths.push("Activity is already spread across the day.");
+  if(signals.hasProtectedBreak)strengths.push(`${signals.details.protectedBreaks} planned ${signals.details.protectedBreaks===1?"break is":"breaks are"} already protected.`);
+  if(signals.meaningful.length)strengths.push(`${rowLabel(signals.meaningful[0])} keeps something meaningful in view.`);
+  if(!strengths.length&&signals.active.length)strengths.push("You have made the day visible, including what needs to be done.");
+  return strengths;
 }
-function updateRow(event) {
-  const article = event.target.closest("[data-row]");
-  const row = state.activities.find(item => item.id === article.dataset.row);
-  row[event.target.dataset.field] = event.target.value;
-  const wasOpen = article.querySelector("details")?.open;
-  save(); renderRows();
-  if (wasOpen) rowsHost.querySelector(`[data-row="${row.id}"] details`)?.setAttribute("open", "");
+function patternObservations(rows) {
+  const signals=patternSignals(rows); const observations=[];
+  if(signals.demandingByTime?.rows.length>=2)observations.push(`${signals.demandingByTime.rows.length} higher-effort activities sit ${timingLabels[signals.demandingByTime.timing].toLowerCase()}.`);
+  else if(signals.details.clusterCount>=2)observations.push(`${signals.details.clusterCount} activities share the ${timingLabels[signals.details.clusterTiming].toLowerCase()} part of the day.`);
+  if(!signals.hasProtectedBreak&&signals.active.length>=2)observations.push("There is a long stretch of activity without a planned break.");
+  if(signals.repeatedDemand?.[1]>=3)observations.push(`Several activities may draw on similar ${signals.repeatedDemand[0]} effort.`);
+  if(!signals.meaningful.length&&signals.active.length)observations.push("Necessary activity currently fills the board without a named meaningful activity.");
+  else if(signals.meaningful.length&&signals.details.clusterCount>=3&&signals.meaningful.some(row=>row.timing===signals.details.clusterTiming))observations.push("Meaningful activity shares the busiest part of the day and could be crowded out.");
+  if(signals.balanced)observations.push("The day already looks reasonably balanced, with variety, space and a planned break.");
+  return observations;
 }
-const timingOptions = [["morning","Morning"],["midday","Midday"],["afternoon","Later"],["evening","Evening"]];
-const activityType = row => ["personal-care","meal","household","appointment"].includes(row.activity) ? "necessary" : isRestorative(row) ? "restorative" : row.activity === "custom" ? "personal" : "meaningful";
-const energyDots = count => Array.from({length:count},() => "<i></i>").join("");
-function renderRows() {
-  rowsHost.innerHTML = timingOptions.map(([timing,title]) => {
-    const cards = state.activities.filter(row => row.activity && row.timing === timing).map(row => {
-      const type = activityType(row);
-      const restorative = isRestorative(row);
-      const effortOptions = restorative ? [["light","A little · +1"],["medium","Some · +2"],["high","More · +3"]] : [["light","Light · 2"],["medium","Moderate · 4"],["high","Higher · 6"]];
-      return `<article class="day-card-tile is-${type}" data-row="${row.id}">
-      <div class="day-card-tile__face"><span class="tile-symbol" aria-hidden="true">${type === "necessary" ? "◆" : type === "restorative" ? "○" : type === "personal" ? "+" : "●"}</span><div><small>${type === "personal" ? "energy-consuming · my own" : type}</small><strong>${escapeHtml(rowLabel(row))}</strong></div><div class="tile-energy" aria-label="${restorative ? "Adds" : "Uses"} ${rowEnergy(row)} energy units">${energyDots(rowEnergy(row))}</div></div>
-      <details><summary>Adjust card</summary><div class="tile-controls">
-        <label class="custom-name" ${row.activity === "custom" ? "" : "hidden"}>Name it<input data-field="custom" value="${escapeHtml(row.custom)}" placeholder="Name this activity"></label>
-        <label class="custom-nature" ${row.activity === "custom" ? "" : "hidden"}>Energy effect<select data-field="nature">${optionMarkup([["consuming","Uses energy"],["restorative","Restorative · adds energy"]],row.nature || "consuming")}</select></label>
-        <label>${restorative ? "Restorative effect" : "Effort"}<select data-field="effort">${optionMarkup(effortOptions,row.effort)}</select></label>
-        <label>Amount<select data-field="version">${optionMarkup([["full","Usual"],["smaller","Smaller"],["minimum","Minimum"]],row.version)}</select></label>
-        <label>Recovery<select data-field="recovery">${optionMarkup([["none","No planned pause"],["short","Short pause"],["long","Longer recovery"]],row.recovery)}</select></label>
-        <div class="tile-moves"><button type="button" data-move="earlier">Earlier</button><button type="button" data-move="later">Later</button><button type="button" data-remove-row>Remove</button></div>
-      </div></details>
-    </article>`;
+
+const usualHost=document.querySelector("#activityRows");
+const pacedHost=document.querySelector("#pacedActivityRows");
+function renderBoard(host,rows,phase) {
+  const editableUsual=phase==="usual";
+  host.innerHTML=timingOptions.map(([timing,title])=>{
+    const cards=rows.filter(row=>row.activity&&row.timing===timing).map(row=>{
+      const type=activityType(row); const breakCard=isBreak(row); const symbol=type==="necessary"?"◆":type==="break"?"○":"●";
+      const status=breakCard?"Planned break":editableUsual?`${effortLabels[row.effort]} effort`:`${effortLabels[row.effort]} effort · ${versionLabels[row.version]}`;
+      const meaningfulGuidance=!editableUsual&&type==="meaningful"?`<p class="tile-guidance"><strong>Protect what matters.</strong> You can still adapt this activity, but first consider whether a necessary or more demanding task could change instead.</p>`:"";
+      const shaping=editableUsual?`
+        <label class="custom-name" ${row.activity==="custom"?"":"hidden"}>Name it<input data-field="custom" value="${escapeHtml(row.custom)}" placeholder="Name this activity"></label>
+        <label class="custom-category" ${row.activity==="custom"?"":"hidden"}>What kind of activity?<select data-field="category">${optionMarkup([["necessary","Necessary"],["meaningful","Meaningful"],["break","Planned break"]],row.category)}</select></label>
+        <label ${breakCard?"hidden":""}>How demanding might it feel?<select data-field="effort">${optionMarkup([["light","Light"],["medium","Moderate"],["high","Higher"]],row.effort)}</select></label>`:`
+        ${meaningfulGuidance}<label ${breakCard?"hidden":""}>Choose a version<select data-field="version">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum version"],["help","Ask for help"],["move","Move to another day"]],row.version)}</select></label>
+        <label ${breakCard?"hidden":""}>Break afterwards<select data-field="recovery">${optionMarkup([["none","No break planned yet"],["short","Short planned break"],["long","Longer planned break"]],row.recovery)}</select></label>`;
+      return `<article class="day-card-tile is-${type}" data-row="${row.id}"><div class="day-card-tile__face"><span class="tile-symbol" aria-hidden="true">${symbol}</span><div><small>${type==="break"?"planned break":type}</small><strong>${escapeHtml(rowLabel(row))}</strong></div><span class="tile-status">${status}</span></div><details><summary>${editableUsual?"Describe my usual pattern":"Try a pacing change"}</summary><div class="tile-controls">${shaping}<div class="tile-moves"><button type="button" data-move="earlier">Move earlier</button><button type="button" data-move="later">Move later</button>${editableUsual?'<button type="button" data-remove-row>Remove</button>':""}</div></div></details></article>`;
     }).join("");
-    return `<section class="day-zone" data-zone="${timing}"><header><span aria-hidden="true">${timing === "morning" ? "☼" : timing === "midday" ? "◒" : timing === "afternoon" ? "◐" : "☾"}</span><h4>${title}</h4></header><div class="day-zone__cards">${cards || `<p class="empty-zone">Room left open</p>`}</div></section>`;
+    return `<section class="day-zone" data-zone="${timing}"><header><span aria-hidden="true">${timing==="morning"?"☼":timing==="midday"?"◒":timing==="afternoon"?"◐":"☾"}</span><h4>${title}</h4></header><div class="day-zone__cards">${cards||'<p class="empty-zone">Room left open</p>'}</div></section>`;
   }).join("");
-  rowsHost.querySelectorAll("select,input").forEach(control => control.addEventListener("change", updateRow));
-  rowsHost.querySelectorAll("input").forEach(control => control.addEventListener("input", updateRow));
-  rowsHost.querySelectorAll("[data-remove-row]").forEach(button => button.addEventListener("click", () => { state.activities = state.activities.filter(row => row.id !== button.closest("[data-row]").dataset.row); save(); renderRows(); }));
-  rowsHost.querySelectorAll("[data-move]").forEach(button => button.addEventListener("click", () => { const row = state.activities.find(item => item.id === button.closest("[data-row]").dataset.row); const index = timingOptions.findIndex(([value]) => value === row.timing); row.timing = timingOptions[button.dataset.move === "earlier" ? Math.max(0,index - 1) : Math.min(timingOptions.length - 1,index + 1)][0]; save(); renderRows(); }));
-  renderEnergySummary();
-}
-document.querySelectorAll("[data-add-activity]").forEach(button => button.addEventListener("click", () => {
-  const activity = button.dataset.addActivity;
-  const restorative = ["pause","relax"].includes(activity);
-  state.activities.push({ id:makeId(), activity, custom:"", nature:"consuming", effort:"medium", version:"full", timing:"afternoon", recovery:restorative ? "none" : "short" }); save(); renderRows();
-  const addedCard = rowsHost.querySelector(`[data-row="${state.activities.at(-1).id}"]`);
-  if (activity === "custom") addedCard?.querySelector("details")?.setAttribute("open", "");
-  addedCard?.scrollIntoView({behavior:"smooth",block:"center"});
-}));
-renderRows();
-
-function renderDayCopy() {
-  const day = dayName();
-  const possessive = dayPossessive();
-  document.querySelectorAll('[name="planningDay"]').forEach(input => { input.checked = input.value === (isTomorrowPlan() ? "tomorrow" : "today"); });
-  document.querySelector("#todayDateLabel").textContent = `${formattedDate(0)} · plan around how things feel now`;
-  document.querySelector("#tomorrowDateLabel").textContent = `${formattedDate(1)} · prepare gently the evening before`;
-  document.querySelector("#capacityHeading").textContent = `How much energy feels available ${day}?`;
-  document.querySelector("#capacityLegend").textContent = `Capacity available ${day}`;
-  document.querySelector("#customCapacityCopy").textContent = `Use a number that makes more sense for you ${day}.`;
-  document.querySelector("#customCapacityLabel").textContent = `Custom energy units available ${day}`;
-  document.querySelector("#chooseActivitiesButton").textContent = `Choose ${possessive} activities`;
-  document.querySelector("#activitiesHeading").textContent = `What needs and deserves space ${day}?`;
-  document.querySelector("#activitiesIntro").textContent = `Mix necessary, meaningful and restorative activity. Energy-consuming activities use units; restorative activities can add units back, up to ${possessive} starting estimate.`;
-  document.querySelector("#meaningfulActivityLabel").textContent = `One activity that would make ${day} feel worthwhile`;
-  document.querySelector("#activityPlannerHeading").textContent = `Place what matters into ${day}`;
-  document.querySelector("#activityRows").setAttribute("aria-label", `Activities placed into ${day}`);
-  document.querySelector("#planHeading").textContent = `Choose the amount that fits ${day}.`;
-  document.querySelector("#savePlanButton").textContent = `Save ${possessive} plan`;
-  document.querySelector("#finishEyebrow").textContent = `A compassionate plan for ${day}`;
-  renderEnergySummary();
-}
-document.querySelectorAll('[name="planningDay"]').forEach(input => input.addEventListener("change", () => {
-  state.planDate = dateKey(input.value === "tomorrow" ? 1 : 0);
-  save();
-  renderDayCopy();
-}));
-
-const presetCapacities = [4,8,12,16,22];
-const customCapacityInput = document.querySelector("#customCapacity");
-const customCapacityChoice = document.querySelector("#capacityCustomChoice");
-function syncCapacityControls() {
-  const isPreset = presetCapacities.includes(state.capacity);
-  document.querySelectorAll('[name="capacity"]').forEach(input => { input.checked = input.value === "custom" ? !isPreset : Number(input.value) === state.capacity; });
-  customCapacityInput.value = state.capacity;
-}
-document.querySelectorAll('[name="capacity"]').forEach(input => input.addEventListener("change", () => {
-  const next = input.value === "custom" ? Number(customCapacityInput.value) : Number(input.value);
-  state.capacity = Math.min(40,Math.max(1,Number.isFinite(next) ? next : 12));
-  save(); renderEnergySummary();
-}));
-customCapacityInput.addEventListener("input", () => {
-  const next = Number(customCapacityInput.value);
-  if (!Number.isFinite(next) || next < 1) return;
-  customCapacityChoice.checked = true;
-  state.capacity = Math.min(40,Math.round(next));
-  save(); renderEnergySummary();
-});
-syncCapacityControls();
-renderDayCopy();
-document.querySelector("#meaningfulActivity").value = state.meaningfulActivity;
-document.querySelector("#recoveryChoice").value = state.recoveryChoice;
-document.querySelector("#lowerVersion").value = state.lowerVersion;
-document.querySelector("#meaningfulActivity").addEventListener("input", event => { state.meaningfulActivity = event.target.value; save(); });
-document.querySelector("#recoveryChoice").addEventListener("input", event => { state.recoveryChoice = event.target.value; save(); document.querySelector("#saveStatus").textContent = "Saved in this browser."; });
-document.querySelector("#lowerVersion").addEventListener("input", event => { state.lowerVersion = event.target.value; save(); document.querySelector("#saveStatus").textContent = "Saved in this browser."; });
-
-const steps = ["capacity","activities","compare","plan"];
-function showStep(id) {
-  document.body.classList.toggle("pace-is-beyond-intro", id !== "capacity");
-  document.querySelectorAll(".pace-step").forEach(section => { const active = section.dataset.step === id; section.hidden = !active; section.classList.toggle("is-active",active); });
-  document.querySelectorAll(".pace-progress span").forEach((item,index) => { const current = steps.indexOf(id); item.classList.toggle("is-current",index === current); item.classList.toggle("is-complete",index < current); if (index === current) item.setAttribute("aria-current","step"); else item.removeAttribute("aria-current"); });
-  if (id === "compare") renderComparison();
-  if (id === "plan") renderPlan();
-  document.querySelector(`[data-step="${id}"] h2`)?.focus({preventScroll:true});
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-document.querySelectorAll("[data-next]").forEach(button => button.addEventListener("click", () => {
-  if (button.dataset.next === "compare" && !state.activities.some(row => row.activity)) return alert("Choose at least one activity to compare.");
-  showStep(button.dataset.next);
-}));
-document.querySelectorAll("[data-back]").forEach(button => button.addEventListener("click", () => showStep(button.dataset.back)));
-
-const timingLabels = { morning:"Morning", midday:"Midday", afternoon:"Later", evening:"Evening" };
-const versionLabels = { full:"Usual amount", smaller:"Smaller amount", minimum:"Minimum amount", move:"Move to another day", help:"Ask for help" };
-const recoveryLabels = { none:"No planned pause", short:"Short pause", long:"Longer recovery" };
-function baselineTotals() {
-  const rows = state.activities.filter(row => row.activity);
-  const consuming = rows.filter(row => !isRestorative(row)).reduce((sum,row) => sum + rowEnergy(row,false),0);
-  const restorative = rows.filter(isRestorative).reduce((sum,row) => sum + rowEnergy(row,false),0);
-  const restored = Math.min(restorative,consuming);
-  const used = Math.max(0,consuming - restored);
-  return { consuming,restorative,restored,used,remaining:state.capacity - used };
-}
-function comparisonRow(row, paced) {
-  const restorative = isRestorative(row);
-  const energy = rowEnergy(row,paced);
-  const amount = paced ? versionLabels[row.version] || "Usual amount" : "Usual amount";
-  const when = paced ? timingLabels[row.timing] || "Later" : "Close together";
-  const pause = restorative ? "Restorative" : paced ? recoveryLabels[row.recovery] || "No planned pause" : "Not protected";
-  return `<tr><th scope="row"><strong>${escapeHtml(rowLabel(row))}</strong><small>${amount}</small></th><td>${when}</td><td><span class="comparison-energy ${restorative ? "is-restorative" : ""}">${restorative ? "+" : "−"}${energy}</span></td><td>${pause}</td></tr>`;
-}
-function comparisonResult(totals, paced) {
-  const over = totals.remaining < 0;
-  const exact = totals.remaining === 0;
-  const width = Math.min(100,Math.round((totals.used / Math.max(1,state.capacity)) * 100));
-  const status = over
-    ? `${Math.abs(totals.remaining)} ${Math.abs(totals.remaining) === 1 ? "unit" : "units"} above ${dayPossessive()} estimate`
-    : exact
-      ? `Uses all ${state.capacity} available units`
-      : `${totals.remaining} ${totals.remaining === 1 ? "unit" : "units"} left available`;
-  const note = paced ? "Protected pauses and flexible amounts leave more room to respond." : "Clustering usual amounts can leave less flexibility if the day changes.";
-  return `<strong>${totals.used} of ${state.capacity} net energy units used</strong><div class="energy-meter ${over ? "is-over" : ""}" role="img" aria-label="${totals.used} of ${state.capacity} energy units used"><i style="width:${width}%"></i></div><b>${status}</b><p>${note}</p>`;
-}
-function renderComparison() {
-  const rows = state.activities.filter(row => row.activity);
-  document.querySelector("#usualPlanRows").innerHTML = rows.map(row => comparisonRow(row,false)).join("");
-  document.querySelector("#pacedPlanRows").innerHTML = rows.map(row => comparisonRow(row,true)).join("");
-  document.querySelector("#usualPlanResult").innerHTML = comparisonResult(baselineTotals(),false);
-  document.querySelector("#pacedPlanResult").innerHTML = comparisonResult(energyTotals(),true);
+  host.querySelectorAll("select,input").forEach(control=>control.addEventListener("change",event=>{
+    const row=rows.find(item=>item.id===event.target.closest("[data-row]").dataset.row); row[event.target.dataset.field]=event.target.value; const openId=row.id; save(); phase==="usual"?renderUsualBoard():renderPaceWorkshop(); host.querySelector(`[data-row="${openId}"] details`)?.setAttribute("open","");
+  }));
+  host.querySelectorAll("input").forEach(control=>control.addEventListener("input",event=>{ const row=rows.find(item=>item.id===event.target.closest("[data-row]").dataset.row); row[event.target.dataset.field]=event.target.value; save(); }));
+  host.querySelectorAll("[data-move]").forEach(button=>button.addEventListener("click",()=>{ const row=rows.find(item=>item.id===button.closest("[data-row]").dataset.row); const index=timingOptions.findIndex(([value])=>value===row.timing); row.timing=timingOptions[button.dataset.move==="earlier"?Math.max(0,index-1):Math.min(timingOptions.length-1,index+1)][0]; save(); phase==="usual"?renderUsualBoard():renderPaceWorkshop(); }));
+  host.querySelectorAll("[data-remove-row]").forEach(button=>button.addEventListener("click",()=>{ const id=button.closest("[data-row]").dataset.row; state.activities=state.activities.filter(row=>row.id!==id); save(); renderUsualBoard(); }));
 }
 
-function renderPlan() {
-  document.querySelector("#planList").innerHTML = state.activities.filter(row => row.activity).map(row => `<article class="plan-row"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${isRestorative(row) ? "+" : "−"}${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"} · ${row.timing} · ${isRestorative(row) ? "restorative" : `${row.effort === "medium" ? "moderate" : row.effort} effort`} · ${row.recovery === "none" ? "no planned pause" : row.recovery + " recovery"}</small></div><select data-version="${row.id}" aria-label="Amount ${dayName()} for ${escapeHtml(rowLabel(row))}">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"],["move","Move to another day"],["help","Ask for help"]],row.version)}</select></article>`).join("");
+function renderUsualPatternSummary() {
+  const host=document.querySelector("#patternSummary"); const guide=document.querySelector("#capacityGuide"); const capacity=capacityCopy[state.capacity]||capacityCopy.usual; const details=patternDetails(state.activities);
+  guide.innerHTML=`<strong>${capacity.title}</strong><span>${capacity.detail}</span><small>Energy is a personal guide, not something you need to calculate.</small>`;
+  if(!details.active.length&&!details.dedicatedBreaks){host.className="pattern-summary is-empty";host.innerHTML="<strong>Build the day one choice at a time.</strong><span>Add something necessary, something meaningful and a planned break.</span>";return;}
+  const pattern=details.clusterCount>=2?`<strong>${details.clusterCount} activities sit ${timingLabels[details.clusterTiming].toLowerCase()}.</strong><span>This is a pattern to notice—not something you have done wrong.</span>`:`<strong>This day is already fairly spread out.</strong><span>You can still explore amount and planned breaks.</span>`;
+  host.className=`pattern-summary ${details.clusterCount>=2?"is-clustered":"is-steady"}`; host.innerHTML=`${pattern}<small>${details.dedicatedBreaks?`${details.dedicatedBreaks} planned ${details.dedicatedBreaks===1?"break":"breaks"} already included.`:"No dedicated break has been placed yet."}</small>`;
 }
-document.querySelector("#paceForm").addEventListener("submit", event => {
-  event.preventDefault(); document.querySelectorAll("[data-version]").forEach(select => { const row=state.activities.find(item=>item.id===select.dataset.version); if(row) row.version=select.value; }); save();
-  document.querySelectorAll(".pace-step").forEach(section => section.hidden=true); document.querySelector(".pace-progress").hidden=true;
-  const meaningful=state.meaningfulActivity || state.activities.find(row=>row.activity)?.custom || rowLabel(state.activities.find(row=>row.activity));
-  document.querySelector("#finishSummary").textContent=`You have made space for ${meaningful.toLowerCase()}, with amounts and recovery choices that can change if ${dayName()} changes.`;
-  const panel=document.querySelector("#finishPanel"); panel.hidden=false; panel.focus(); window.scrollTo({top:0,behavior:"smooth"});
-});
-document.querySelector("#editPlan").addEventListener("click",()=>{ document.querySelector("#finishPanel").hidden=true; document.querySelector(".pace-progress").hidden=false; showStep("plan"); });
-document.querySelector("#startPacingAgain").addEventListener("click", () => {
-  if (!window.confirm("Clear this pacing draft and start again?")) return;
-  try { localStorage.removeItem(STORAGE_KEY); } catch {}
-  state = freshState();
-  document.querySelector("#finishPanel").hidden = true;
-  document.querySelector(".pace-progress").hidden = false;
-  document.querySelector("#meaningfulActivity").value = "";
-  document.querySelector("#recoveryChoice").value = "";
-  document.querySelector("#lowerVersion").value = "";
-  syncCapacityControls();
-  renderRows();
-  renderDayCopy();
-  document.querySelector("#saveStatus").textContent = "Fresh pacing plan started. Nothing from the previous draft remains.";
-  history.replaceState(null, "", location.pathname);
-  showStep("capacity");
-});
-if(steps.includes(location.hash.slice(1))) showStep(location.hash.slice(1));
+function renderUsualBoard(){renderBoard(usualHost,state.activities,"usual");renderUsualPatternSummary();}
+document.querySelectorAll("[data-add-activity]").forEach(button=>button.addEventListener("click",()=>{const activity=button.dataset.addActivity;const type=activityMeta[activity]?.type||"meaningful";state.activities.push({id:makeId(),activity,custom:"",category:type,effort:"medium",version:"full",timing:"afternoon",recovery:"none"});save();renderUsualBoard();const card=usualHost.querySelector(`[data-row="${state.activities.at(-1).id}"]`);if(activity==="custom")card?.querySelector("details")?.setAttribute("open","");card?.scrollIntoView({behavior:"smooth",block:"center"});}));
+
+function missionState(){
+  const usual=state.usualActivities; const paced=state.activities; const usualDetails=patternDetails(usual);
+  const timingChanged=paced.some(row=>!isBreak(row)&&usual.find(item=>item.id===row.id)?.timing!==row.timing);
+  const spreadPresent=patternSignals(usual).isSpread;
+  const breakPresent=patternSignals(usual).hasProtectedBreak;
+  const spreadDone=timingChanged;
+  const adaptDone=paced.some(row=>!isBreak(row)&&row.version!=="full");
+  const breakDone=paced.some(row=>!isBreak(row)&&row.recovery!=="none"&&usual.find(item=>item.id===row.id)?.recovery==="none");
+  const changes=[spreadDone,adaptDone,breakDone].filter(Boolean).length; const strengths=[spreadPresent,breakPresent].filter(Boolean).length;
+  return {spreadDone,adaptDone,breakDone,spreadPresent,breakPresent,changes,strengths,usualDetails};
+}
+function renderPaceWorkshop(){
+  renderBoard(pacedHost,state.activities,"paced"); const missions=missionState();
+  const states={spread:{changed:missions.spreadDone,present:missions.spreadPresent},adapt:{changed:missions.adaptDone,present:false},break:{changed:missions.breakDone,present:missions.breakPresent}};
+  document.querySelectorAll("[data-mission]").forEach(item=>{const status=states[item.dataset.mission];item.classList.toggle("is-complete",status.changed);item.classList.toggle("is-strength",!status.changed&&status.present);item.querySelector("b").textContent=status.changed?"Change made":status.present?"Already helping":"Optional to try";});
+  const achievement=document.querySelector("#paceAchievement"); achievement.className=`pace-achievement ${missions.changes>=1?"is-complete":""}`;
+  if(missions.changes>=1)achievement.innerHTML=`<strong>${missions.changes===1?"One appropriate change may be enough.":`${missions.changes} useful changes made.`}</strong><span>Your comparison is ready. You can reveal it now or keep exploring.</span>`;
+  else if(missions.strengths)achievement.innerHTML=`<strong>${missions.strengths} pacing ${missions.strengths===1?"strength was":"strengths were"} already present.</strong><span>Try one further change, while protecting what matters most.</span>`;
+  else achievement.innerHTML=`<strong>Try one change that fits this day.</strong><span>Spread something, adapt a task or protect a break.</span>`;
+  document.querySelector("#revealComparison").disabled=missions.changes<1;
+}
+function beginPacing(){state.usualActivities=cloneRows(state.activities);state.activities=cloneRows(state.activities).map(row=>({...row,version:"full",recovery:"none"}));save();renderPaceWorkshop();}
+
+function changeTags(row){const usual=state.usualActivities.find(item=>item.id===row.id);if(!usual)return[];const tags=[];if(row.timing!==usual.timing)tags.push("Moved");if(row.version!=="full")tags.push(versionLabels[row.version]);if(row.recovery!=="none")tags.push("Break protected");return tags;}
+function comparisonRow(row,paced){const breakCard=isBreak(row);const tags=paced?changeTags(row):[];const amount=breakCard?"—":paced?`${effortLabels[row.effort]} effort · ${versionLabels[row.version]}`:`${effortLabels[row.effort]} effort`;const when=row.version==="move"&&paced?"Another day":timingLabels[row.timing];const breakText=breakCard?"Planned break":paced?recoveryLabels[row.recovery]:recoveryLabels[row.recovery];return `<tr class="${tags.length?"is-changed":""}"><th scope="row"><strong>${escapeHtml(rowLabel(row))}</strong><small>${breakCard?"Planned break":activityType(row)}</small>${tags.length?`<span class="change-tags">${tags.map(tag=>`<i>${tag}</i>`).join("")}</span>`:""}</th><td data-label="When">${when}</td><td data-label="${paced?"Effort and version":"Effort"}">${amount}</td><td data-label="Break">${breakText}</td></tr>`;}
+function listMarkup(items){return `<ul>${items.map(item=>`<li>${escapeHtml(item)}</li>`).join("")}</ul>`;}
+function comparisonInsights(usual,paced){
+  const before=patternSignals(usual); const after=patternSignals(paced); const already=baselineStrengths(usual); const observations=patternObservations(usual); const changed=[]; const next=[];
+  const moved=paced.filter(row=>!isBreak(row)&&changeTags(row).includes("Moved")); const movedBreaks=paced.filter(row=>isBreak(row)&&changeTags(row).includes("Moved")); const adapted=paced.filter(row=>!isBreak(row)&&row.version!=="full"); const protectedRows=paced.filter(row=>!isBreak(row)&&row.recovery!=="none"&&usual.find(item=>item.id===row.id)?.recovery==="none");
+  if(moved.length)changed.push(`${moved.length} ${moved.length===1?"activity was":"activities were"} moved to another part of the day.`);
+  if(movedBreaks.length)changed.push(`${movedBreaks.length} planned ${movedBreaks.length===1?"break was":"breaks were"} repositioned.`);
+  if(adapted.length)changed.push(`${adapted.length} ${adapted.length===1?"activity now has":"activities now have"} a smaller, shared or moved version.`);
+  if(protectedRows.length)changed.push(`${protectedRows.length} new planned ${protectedRows.length===1?"break was":"breaks were"} protected.`);
+  const meaningfulAdapted=adapted.some(row=>activityType(row)==="meaningful"); const adaptableNecessary=paced.some(row=>activityType(row)==="necessary"&&row.version==="full"&&(row.effort==="high"||before.details.clusterCount>=2));
+  if(after.demandingByTime?.rows.length>=2)next.push(`Consider separating the ${after.demandingByTime.rows.length} higher-effort activities that still sit ${timingLabels[after.demandingByTime.timing].toLowerCase()}.`);
+  if(!after.hasProtectedBreak&&after.active.length>=2)next.push("Consider protecting one break before a long stretch of activity.");
+  if(after.repeatedDemand?.[1]>=3)next.push(`Several activities still draw on similar ${after.repeatedDemand[0]} effort; alternating the type of demand may feel steadier.`);
+  if(!after.meaningful.length&&after.active.length)next.push("Consider making room for one enjoyable or meaningful activity, even in a small form.");
+  if(meaningfulAdapted&&adaptableNecessary)next.push("Check whether a necessary or higher-effort task could become more manageable before reducing what matters most.");
+  if(!next.length&&after.balanced)next.push("This day already looks reasonably balanced. You may not need another change.");
+  if(!next.length)next.push("Try this version gently and notice whether one further adjustment would help; there is no need to use every pacing move.");
+  return {already,observations,changed:changed.length?changed:["You kept the day as first planned."],next};
+}
+function renderComparison(){
+  const usual=state.usualActivities.length?state.usualActivities:cloneRows(state.activities);const paced=state.activities;const insights=comparisonInsights(usual,paced);
+  document.querySelector("#usualPlanRows").innerHTML=usual.map(row=>comparisonRow(row,false)).join("");document.querySelector("#pacedPlanRows").innerHTML=paced.map(row=>comparisonRow(row,true)).join("");
+  document.querySelector("#usualPlanHeading").textContent="The day as first planned";
+  document.querySelector("#usualPlanResult").innerHTML=`<strong>What was already helping</strong>${listMarkup(insights.already)}${insights.observations.length?`<p><b>The board also noticed:</b> ${insights.observations.join(" ")}</p>`:""}`;
+  document.querySelector("#pacedPlanResult").innerHTML=`<strong>What you changed</strong>${listMarkup(insights.changed)}<p>One appropriate change may be enough.</p>`;
+  document.querySelector("#comparisonCalloutTitle").textContent="What you could try next";
+  document.querySelector("#comparisonText").innerHTML=insights.next.map(item=>`<span>${item}</span>`).join("");
+}
+
+function renderPlan(){document.querySelector("#planList").innerHTML=state.activities.filter(row=>row.activity).map(row=>isBreak(row)?`<article class="plan-row is-break"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${timingLabels[row.timing]} · planned break</small></div><span>Protected</span></article>`:`<article class="plan-row"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${row.version==="move"?"Another day":timingLabels[row.timing]} · ${effortLabels[row.effort].toLowerCase()} effort · ${recoveryLabels[row.recovery].toLowerCase()}</small></div><select data-version="${row.id}" aria-label="Version ${dayName()} for ${escapeHtml(rowLabel(row))}">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum version"],["help","Ask for help"],["move","Move to another day"]],row.version)}</select></article>`).join("");document.querySelectorAll("[data-version]").forEach(select=>select.addEventListener("change",event=>{const row=state.activities.find(item=>item.id===event.target.dataset.version);if(row){row.version=event.target.value;save();}}));}
+function buildSummary(){const meaningfulRow=state.activities.find(row=>activityType(row)==="meaningful");const firstRow=state.activities[0];const focus=state.meaningfulActivity.trim()||(meaningfulRow?rowLabel(meaningfulRow):firstRow?rowLabel(firstRow):"what matters");const usual=state.usualActivities.length?state.usualActivities:cloneRows(state.activities);const insights=comparisonInsights(usual,state.activities);return{planDate:state.planDate,day:dayName(),capacity:capacityCopy[state.capacity].title,focus,activities:state.activities.filter(row=>row.activity).map(row=>({name:rowLabel(row),type:activityType(row),when:row.version==="move"?"Another day":timingLabels[row.timing],version:isBreak(row)?"Planned break":versionLabels[row.version],break:isBreak(row)?"Protected":recoveryLabels[row.recovery]})),insights:{alreadyHelping:insights.already,changed:insights.changed,tryNext:insights.next},plannedBreak:state.recoveryChoice.trim(),difficultDay:state.lowerVersion.trim()};}
+function renderFinishedSummary(summary){const activities=summary.activities.map(item=>`<li><strong>${escapeHtml(item.name)}</strong><span>${item.when} · ${item.version}${item.type==="break"?"":` · ${item.break}`}</span></li>`).join("");const difficult=summary.difficultDay||"Choose a smaller version, ask for help or move one activity while keeping one gentle, meaningful step.";const planned=summary.plannedBreak||"Use the protected breaks already placed in the day.";document.querySelector("#finishSummary").textContent=`Your focus—${summary.focus}—stays in view, with room for the plan to change.`;document.querySelector("#summaryPlan").innerHTML=`<div class="summary-plan__header"><span>Day guide · ${escapeHtml(summary.capacity)}</span><strong>What matters: ${escapeHtml(summary.focus)}</strong></div><ul>${activities}</ul><div class="summary-plan__alternatives"><div><small>My planned break</small><p>${escapeHtml(planned)}</p></div><div><small>For a more difficult day</small><p>${escapeHtml(difficult)}</p></div></div>`;}
+
+function renderDayCopy(){const day=dayName();document.querySelectorAll('[name="planningDay"]').forEach(input=>input.checked=input.value===(isTomorrowPlan()?"tomorrow":"today"));document.querySelector("#todayDateLabel").textContent=`${formattedDate(0)} · plan around how things feel now`;document.querySelector("#tomorrowDateLabel").textContent=`${formattedDate(1)} · prepare gently the evening before`;document.querySelector("#chooseActivitiesButton").textContent=`Choose what matters ${day}`;document.querySelector("#activitiesHeading").textContent=`What needs and deserves space ${day}?`;document.querySelector("#activitiesIntro").textContent=`Start with what is necessary and what is meaningful. Add a planned break before ${day} fills up.`;document.querySelector("#meaningfulActivityLabel").textContent=`One activity that would make ${day} feel worthwhile`;document.querySelector("#activityPlannerHeading").textContent=`Place what matters into ${day}`;document.querySelector("#planHeading").textContent=`Choose a manageable version for ${day}.`;document.querySelector("#savePlanButton").textContent=`Save ${dayPossessive()} plan`;document.querySelector("#finishEyebrow").textContent=`A flexible plan for ${day}`;renderUsualPatternSummary();}
+
+document.querySelectorAll('[name="planningDay"]').forEach(input=>input.addEventListener("change",()=>{state.planDate=dateKey(input.value==="tomorrow"?1:0);save();renderDayCopy();}));document.querySelectorAll('[name="capacity"]').forEach(input=>input.addEventListener("change",()=>{state.capacity=input.value;save();renderUsualPatternSummary();}));
+function syncCapacityControls(){document.querySelectorAll('[name="capacity"]').forEach(input=>input.checked=input.value===state.capacity);}
+document.querySelector("#meaningfulActivity").value=state.meaningfulActivity;document.querySelector("#recoveryChoice").value=state.recoveryChoice;document.querySelector("#lowerVersion").value=state.lowerVersion;
+document.querySelector("#meaningfulActivity").addEventListener("input",event=>{state.meaningfulActivity=event.target.value;save();});document.querySelector("#recoveryChoice").addEventListener("input",event=>{state.recoveryChoice=event.target.value;save();});document.querySelector("#lowerVersion").addEventListener("input",event=>{state.lowerVersion=event.target.value;save();});
+
+const steps=["capacity","activities","pace","compare","plan"];
+function showStep(id){document.body.classList.toggle("pace-is-beyond-intro",id!=="capacity");document.querySelectorAll(".pace-step").forEach(section=>{const active=section.dataset.step===id;section.hidden=!active;section.classList.toggle("is-active",active);});document.querySelectorAll(".pace-progress span").forEach((item,index)=>{const current=steps.indexOf(id);item.classList.toggle("is-current",index===current);item.classList.toggle("is-complete",index<current);if(index===current)item.setAttribute("aria-current","step");else item.removeAttribute("aria-current");});if(id==="pace")renderPaceWorkshop();if(id==="compare")renderComparison();if(id==="plan")renderPlan();document.querySelector(`[data-step="${id}"] h2`)?.focus({preventScroll:true});window.scrollTo({top:0,behavior:"smooth"});}
+document.querySelectorAll("[data-next]").forEach(button=>button.addEventListener("click",()=>{if(button.dataset.next==="pace"){if(!state.activities.some(row=>row.activity&&!isBreak(row)))return alert("Choose at least one necessary or meaningful activity first.");beginPacing();}if(button.dataset.next==="compare"&&missionState().changes<1)return;showStep(button.dataset.next);}));
+document.querySelectorAll("[data-back]").forEach(button=>button.addEventListener("click",()=>{if(button.dataset.back==="activities"&&state.usualActivities.length){state.activities=cloneRows(state.usualActivities);state.usualActivities=[];save();renderUsualBoard();}showStep(button.dataset.back);}));
+document.querySelector("#paceForm").addEventListener("submit",event=>{event.preventDefault();document.querySelectorAll("[data-version]").forEach(select=>{const row=state.activities.find(item=>item.id===select.dataset.version);if(row)row.version=select.value;});save();const summary=buildSummary();try{localStorage.setItem(SUMMARY_KEY,JSON.stringify(summary));}catch{}document.querySelectorAll(".pace-step").forEach(section=>section.hidden=true);document.querySelector(".pace-progress").hidden=true;renderFinishedSummary(summary);const panel=document.querySelector("#finishPanel");panel.hidden=false;panel.focus();window.scrollTo({top:0,behavior:"smooth"});});
+document.querySelector("#editPlan").addEventListener("click",()=>{document.querySelector("#finishPanel").hidden=true;document.querySelector(".pace-progress").hidden=false;showStep("plan");});
+document.querySelector("#startPacingAgain").addEventListener("click",()=>{if(!window.confirm("Clear this pacing draft and start again?"))return;try{localStorage.removeItem(STORAGE_KEY);}catch{}state=freshState();document.querySelector("#finishPanel").hidden=true;document.querySelector(".pace-progress").hidden=false;document.querySelector("#meaningfulActivity").value="";document.querySelector("#recoveryChoice").value="";document.querySelector("#lowerVersion").value="";syncCapacityControls();renderUsualBoard();renderDayCopy();history.replaceState(null,"",location.pathname);showStep("capacity");});
+
+syncCapacityControls();renderUsualBoard();renderDayCopy();
+const requestedStep=location.hash.slice(1);
+if(isDemo&&requestedStep==="compare"){state.usualActivities=demoUsualRows();state.activities=demoPacedRows();}
+if(steps.includes(requestedStep))showStep(requestedStep);
