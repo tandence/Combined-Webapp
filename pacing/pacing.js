@@ -184,7 +184,6 @@ function renderDayCopy() {
   document.querySelector("#meaningfulActivityLabel").textContent = `One activity that would make ${day} feel worthwhile`;
   document.querySelector("#activityPlannerHeading").textContent = `Place what matters into ${day}`;
   document.querySelector("#activityRows").setAttribute("aria-label", `Activities placed into ${day}`);
-  document.querySelector("#journeyNextDay").textContent = isTomorrowPlan() ? "Next day" : "Tomorrow";
   document.querySelector("#planHeading").textContent = `Choose the amount that fits ${day}.`;
   document.querySelector("#savePlanButton").textContent = `Save ${possessive} plan`;
   document.querySelector("#finishEyebrow").textContent = `A compassionate plan for ${day}`;
@@ -230,7 +229,7 @@ function showStep(id) {
   document.body.classList.toggle("pace-is-beyond-intro", id !== "capacity");
   document.querySelectorAll(".pace-step").forEach(section => { const active = section.dataset.step === id; section.hidden = !active; section.classList.toggle("is-active",active); });
   document.querySelectorAll(".pace-progress span").forEach((item,index) => { const current = steps.indexOf(id); item.classList.toggle("is-current",index === current); item.classList.toggle("is-complete",index < current); if (index === current) item.setAttribute("aria-current","step"); else item.removeAttribute("aria-current"); });
-  if (id === "compare") renderComparison(state.pattern);
+  if (id === "compare") renderComparison();
   if (id === "plan") renderPlan();
   document.querySelector(`[data-step="${id}"] h2`)?.focus({preventScroll:true});
   window.scrollTo({top:0,behavior:"smooth"});
@@ -241,42 +240,44 @@ document.querySelectorAll("[data-next]").forEach(button => button.addEventListen
 }));
 document.querySelectorAll("[data-back]").forEach(button => button.addEventListener("click", () => showStep(button.dataset.back)));
 
-const patternCopy = {
-  boom: { kicker:"All-at-once pattern", title:"A better spell becomes a cue to keep going", description:"Activities cluster together and leave less room for recovery later." },
-  steady: { kicker:"Steadier experiment", title:"Activity, pauses and flexible versions", description:"The same priorities are spread out, adapted and given recovery space." }
-};
-function chartData(pattern) {
+const timingLabels = { morning:"Morning", midday:"Midday", afternoon:"Later", evening:"Evening" };
+const versionLabels = { full:"Usual amount", smaller:"Smaller amount", minimum:"Minimum amount", move:"Move to another day", help:"Ask for help" };
+const recoveryLabels = { none:"No planned pause", short:"Short pause", long:"Longer recovery" };
+function baselineTotals() {
   const rows = state.activities.filter(row => row.activity);
-  const capacityY = 55;
-  const unitDrop = 135 / Math.max(4,state.capacity);
-  let currentY = capacityY;
-  const points = [{x:30,y:currentY}];
-  const events = [];
-  if (pattern === "boom") {
-    rows.forEach((row,index) => { const x = 150 + index * Math.min(145,560 / Math.max(1,rows.length)); currentY += (isRestorative(row) ? -1 : 1) * rowEnergy(row) * unitDrop; currentY=Math.max(capacityY,Math.min(270,currentY)); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:isRestorative(row) ? "recovery" : "activity"}); });
-    currentY = Math.min(280,currentY + 30); points.push({x:690,y:currentY}); points.push({x:870,y:Math.max(150,currentY - 15)});
-  } else {
-    rows.forEach((row,index) => { const x = 120 + index * Math.min(180,620 / Math.max(1,rows.length)); currentY += (isRestorative(row) ? -1 : 1) * rowEnergy(row,true) * unitDrop; currentY=Math.max(capacityY,Math.min(245,currentY)); points.push({x,y:currentY}); events.push({x,y:currentY,label:rowLabel(row),kind:isRestorative(row) ? "recovery" : "activity"}); if (!isRestorative(row) && row.recovery !== "none") { const pauseX=x+60; points.push({x:pauseX,y:currentY}); events.push({x:pauseX,y:currentY,label:row.recovery === "long" ? "Longer recovery space" : "Short pause",kind:"recovery"}); } });
-    points.push({x:870,y:currentY});
-  }
-  return { points,events,end:points.at(-1) };
+  const consuming = rows.filter(row => !isRestorative(row)).reduce((sum,row) => sum + rowEnergy(row,false),0);
+  const restorative = rows.filter(isRestorative).reduce((sum,row) => sum + rowEnergy(row,false),0);
+  const restored = Math.min(restorative,consuming);
+  const used = Math.max(0,consuming - restored);
+  return { consuming,restorative,restored,used,remaining:state.capacity - used };
 }
-function pathFrom(points) { return points.map((point,index) => `${index ? "L" : "M"}${point.x} ${point.y}`).join(" "); }
-function renderComparison(pattern = "boom") {
-  state.pattern = pattern; save();
-  document.querySelectorAll("[data-pattern]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.pattern === pattern)));
-  const copy = patternCopy[pattern];
-  document.querySelector("#journeyKicker").textContent = copy.kicker; document.querySelector("#journeyTitle").textContent = copy.title; document.querySelector("#journeyDescription").textContent = copy.description;
-  const data = chartData(pattern); const d = pathFrom(data.points);
-  document.querySelector("#energyPath").setAttribute("d",d); document.querySelector("#energyShadow").setAttribute("d",d);
-  document.querySelector("#energyEnd").setAttribute("cx",data.end.x); document.querySelector("#energyEnd").setAttribute("cy",data.end.y);
-  document.querySelector("#energyJourney").dataset.pattern = pattern;
-  document.querySelector("#journeyEvents").innerHTML = data.events.map(event => `<span class="journey-event is-${event.kind}" style="--event-x:${event.x / 9}%;--event-y:${event.y / 3}%"><i></i><b>${escapeHtml(event.label)}</b></span>`).join("");
-  const { consuming, restored, used, remaining } = energyTotals();
-  const allocation = `${consuming} consuming${restored ? ` − ${restored} restored` : ""} = ${used} net energy units used`;
-  document.querySelector("#journeyOutcome").innerHTML = pattern === "boom" ? `<strong>Less room later</strong><p>${allocation}. Clustering energy-consuming activity can still leave less opportunity to respond if the day changes.</p>` : `<strong>${remaining > 0 ? `${remaining} energy ${remaining === 1 ? "unit" : "units"} left available` : remaining === 0 ? "No energy left available" : `${Math.abs(remaining)} units above ${dayPossessive()} estimate`}</strong><p>${allocation}. Adapted amounts, restorative activity and recovery spaces create a clearer stopping point.</p>`;
+function comparisonRow(row, paced) {
+  const restorative = isRestorative(row);
+  const energy = rowEnergy(row,paced);
+  const amount = paced ? versionLabels[row.version] || "Usual amount" : "Usual amount";
+  const when = paced ? timingLabels[row.timing] || "Later" : "Close together";
+  const pause = restorative ? "Restorative" : paced ? recoveryLabels[row.recovery] || "No planned pause" : "Not protected";
+  return `<tr><th scope="row"><strong>${escapeHtml(rowLabel(row))}</strong><small>${amount}</small></th><td>${when}</td><td><span class="comparison-energy ${restorative ? "is-restorative" : ""}">${restorative ? "+" : "−"}${energy}</span></td><td>${pause}</td></tr>`;
 }
-document.querySelectorAll("[data-pattern]").forEach(button => button.addEventListener("click", () => renderComparison(button.dataset.pattern)));
+function comparisonResult(totals, paced) {
+  const over = totals.remaining < 0;
+  const exact = totals.remaining === 0;
+  const width = Math.min(100,Math.round((totals.used / Math.max(1,state.capacity)) * 100));
+  const status = over
+    ? `${Math.abs(totals.remaining)} ${Math.abs(totals.remaining) === 1 ? "unit" : "units"} above ${dayPossessive()} estimate`
+    : exact
+      ? `Uses all ${state.capacity} available units`
+      : `${totals.remaining} ${totals.remaining === 1 ? "unit" : "units"} left available`;
+  const note = paced ? "Protected pauses and flexible amounts leave more room to respond." : "Clustering usual amounts can leave less flexibility if the day changes.";
+  return `<strong>${totals.used} of ${state.capacity} net energy units used</strong><div class="energy-meter ${over ? "is-over" : ""}" role="img" aria-label="${totals.used} of ${state.capacity} energy units used"><i style="width:${width}%"></i></div><b>${status}</b><p>${note}</p>`;
+}
+function renderComparison() {
+  const rows = state.activities.filter(row => row.activity);
+  document.querySelector("#usualPlanRows").innerHTML = rows.map(row => comparisonRow(row,false)).join("");
+  document.querySelector("#pacedPlanRows").innerHTML = rows.map(row => comparisonRow(row,true)).join("");
+  document.querySelector("#usualPlanResult").innerHTML = comparisonResult(baselineTotals(),false);
+  document.querySelector("#pacedPlanResult").innerHTML = comparisonResult(energyTotals(),true);
+}
 
 function renderPlan() {
   document.querySelector("#planList").innerHTML = state.activities.filter(row => row.activity).map(row => `<article class="plan-row"><div><strong>${escapeHtml(rowLabel(row))}</strong><small>${isRestorative(row) ? "+" : "−"}${rowEnergy(row)} energy ${rowEnergy(row) === 1 ? "unit" : "units"} · ${row.timing} · ${isRestorative(row) ? "restorative" : `${row.effort === "medium" ? "moderate" : row.effort} effort`} · ${row.recovery === "none" ? "no planned pause" : row.recovery + " recovery"}</small></div><select data-version="${row.id}" aria-label="Amount ${dayName()} for ${escapeHtml(rowLabel(row))}">${optionMarkup([["full","Usual amount"],["smaller","Smaller amount"],["minimum","Minimum amount"],["move","Move to another day"],["help","Ask for help"]],row.version)}</select></article>`).join("");
