@@ -9,7 +9,7 @@
   <link rel="icon" href="../pain-jigsaw/assets/app-icons/favicon.ico" sizes="any">
   <link rel="stylesheet" href="../shared/journey-bridge.css">
   <link rel="stylesheet" href="pacing.css">
-  <link rel="stylesheet" href="pacing-enhancements.css?v=9">
+  <link rel="stylesheet" href="pacing-enhancements.css?v=10">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to the pacing plan</a>
@@ -57,6 +57,7 @@
             <button type="button" data-add-activity="relax"><span aria-hidden="true">○</span><strong>Relaxation</strong><small>Planned break</small></button>
             <button type="button" data-add-activity="custom"><span aria-hidden="true">＋</span><strong>Something else</strong><small>Name what matters</small></button>
           </div>
+          <div class="duplicate-notice" id="duplicateNotice" role="status" aria-live="polite" hidden><span id="duplicateMessage"></span><div><button type="button" id="confirmDuplicate">Add another</button><button type="button" id="dismissDuplicate">Keep one</button></div></div>
           <div class="day-board" id="activityRows" aria-label="Activities placed into today"></div>
           <div class="pattern-summary" id="patternSummary" role="status" aria-live="polite"></div>
         </section>
@@ -70,7 +71,7 @@
             <li data-mission="spread"><span aria-hidden="true">1</span><div><strong>Spread activity</strong><small>Move something to another part of the day.</small></div><b>Not tried yet</b></li>
             <li data-mission="adapt"><span aria-hidden="true">2</span><div><strong>Make a task manageable</strong><small>Choose a smaller, shared or moved version while protecting what matters.</small></div><b>Not tried yet</b></li>
             <li data-mission="break"><span aria-hidden="true">3</span><div><strong>Protect a break</strong><small>Plan a break before you are already struggling.</small></div><b>Not tried yet</b></li>
-          </ol></aside>
+          </ol><a class="learning-link" href="../pain-jigsaw/activity.html?return=pacing">Review the pacing principles</a></aside>
           <section class="paced-board" aria-labelledby="pacedBoardHeading"><div class="day-builder-heading"><div><p class="card-kicker">Your paced version</p><h3 id="pacedBoardHeading">Make small changes to the pattern</h3><p>Open a card to change its timing, version or planned break.</p></div></div><p class="protect-meaningful-prompt"><strong>Protect what matters most.</strong> Which activity could become more manageable while protecting what matters most?</p><div class="day-board" id="pacedActivityRows" aria-label="Paced version of the day"></div></section>
         </div>
         <div class="pace-achievement" id="paceAchievement" role="status" aria-live="polite"></div>
@@ -79,13 +80,14 @@
 
       <section class="pace-step" data-step="compare" id="compare" aria-labelledby="compareHeading" hidden>
         <div class="step-copy"><p class="step-number">Step 4 · notice the pattern</p><h2 id="compareHeading">See what was helping and what changed.</h2><p>The left is the day as first planned. The right reflects the pacing choice or choices you tried.</p></div>
+        <section class="paired-comparison" id="pairedComparison" aria-label="Usual and paced activities compared side by side"></section>
         <div class="comparison-grid" id="comparisonTables">
           <article class="day-card day-card--over" aria-labelledby="usualPlanHeading">
             <p class="card-kicker">Usual pattern</p>
             <h3 id="usualPlanHeading">The day as first planned</h3>
             <p class="comparison-intro">Your activities as you first placed them.</p>
             <div class="comparison-table-wrap"><table class="comparison-table">
-              <thead><tr><th scope="col">Activity</th><th scope="col">When</th><th scope="col">Effort</th><th scope="col">Break</th></tr></thead>
+              <thead><tr><th scope="col">Activity</th><th scope="col">When</th><th scope="col">Effort and version</th><th scope="col">Break</th></tr></thead>
               <tbody id="usualPlanRows"></tbody>
             </table></div>
             <div class="pattern-result" id="usualPlanResult"></div>
@@ -107,6 +109,7 @@
 
       <section class="pace-step" data-step="plan" aria-labelledby="planHeading" hidden>
         <div class="step-copy"><p class="step-number">Step 5 · make it flexible</p><h2 id="planHeading">Choose a manageable version for today.</h2><p>You can still change an amount, ask for help or move something. The plan can change without becoming a failure.</p></div>
+        <section class="plan-context" id="planContext" aria-label="What this pacing plan keeps in view"></section>
         <div class="plan-layout"><div class="plan-list" id="planList"></div><aside class="plan-reflection"><label for="recoveryChoice">My planned break<textarea id="recoveryChoice" name="recoveryChoice" placeholder="For example, pause after lunch before starting the next task…"></textarea></label><label for="lowerVersion">A flexible plan for a more difficult day<textarea id="lowerVersion" name="lowerVersion" placeholder="What could be smaller, moved or shared—and what gentle activity would you keep?"></textarea></label><p>Flare-ups and more difficult days do not mean you have gone backwards. Small adjustments can help you stay steady.</p></aside></div>
         <div class="save-note" role="status" id="saveStatus">This plan is saved only in this browser as you make it.</div>
         <div class="step-actions"><button type="button" class="secondary-button" data-back="compare">Back to comparison</button><button type="submit" class="primary-button" id="savePlanButton">Save today’s plan</button></div>
@@ -120,6 +123,6 @@
     <div class="pace-reset"><button type="button" class="start-again-button" id="startPacingAgain">Start again</button><small>Clear this pacing draft and begin with a fresh day.</small></div>
   </main>
   <script src="../shared/journey-bridge.js?v=2"></script>
-  <script src="pacing.js?v=8"></script>
+  <script src="pacing.js?v=9"></script>
 </body>
 </html>
